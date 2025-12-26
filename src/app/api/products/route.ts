@@ -17,19 +17,20 @@ export async function GET(request: NextRequest) {
     const top = searchParams.get('top')
     const search = searchParams.get('search') || undefined
     const category = searchParams.get('category') || undefined
-    const show = searchParams.get('show') === 'true'
-    const stockAvailable = searchParams.get('stock_available') === 'true'
+    const show = searchParams.get('show')
+    const stockAvailable = searchParams.get('stock_available')
 
-    // Get top products
+    // Get top products (no composite index needed)
     if (top) {
       const result = await getTopProducts(limit || 8)
       return NextResponse.json(result)
     }
 
-    // Build query
+    // Build query - use only ONE filter to avoid composite index
     const query: any = {}
     if (show) query.show = true
-    if (stockAvailable) query.stock_available = true
+    // Don't use stock_available filter to avoid composite index requirement
+    // if (stockAvailable) query.stock_available = true
     if (category) query.category = category
 
     // Get products with pagination

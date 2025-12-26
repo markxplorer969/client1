@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { getAuth } from 'firebase-admin/auth'
-import { getFirestore, doc, getDoc } from 'firebase-admin/firestore'
-import { adminApp } from '@/lib/firebase/admin'
+import { getFirestore, doc, getDoc, setDoc } from 'firebase-admin/firestore'
+import { app } from '@/lib/firebase/admin'
 
 // Get current user from token
 export async function getCurrentUser(request: NextRequest) {
@@ -16,11 +16,11 @@ export async function getCurrentUser(request: NextRequest) {
     }
 
     // Verify token with Firebase Admin
-    const auth = getAuth(adminApp)
+    const auth = getAuth(app)
     const decodedToken = await auth.verifyIdToken(token)
 
     // Get user data from Firestore
-    const db = getFirestore(adminApp)
+    const db = getFirestore(app)
     const userDoc = await getDoc(doc(db, 'users', decodedToken.uid))
 
     if (!userDoc.exists()) {
@@ -34,7 +34,7 @@ export async function getCurrentUser(request: NextRequest) {
         updatedAt: new Date().toISOString(),
         role: 'user' // Default role
       }
-      await doc(db, 'users', decodedToken.uid).set(userData)
+      await setDoc(doc(db, 'users', decodedToken.uid), userData)
       return { uid: decodedToken.uid, ...userData }
     }
 

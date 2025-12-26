@@ -199,7 +199,7 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
     )
   }
 
-  const stockAvailable = product?.stock_available !== false && (product?.stock_available || product?.stock! > 0)
+  const stockAvailable = product?.stock_available !== false && ((product?.stock_available ?? 0) > 0 || (product?.stock ?? 0) > 0)
 
   return (
     <Card className="bg-white shadow-lg sticky top-24">

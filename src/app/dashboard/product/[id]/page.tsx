@@ -17,6 +17,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { getProduct, productUpdate, productDelete } from '@/lib/firebase/db'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import AppFooter from '@/components/AppFooter'
 
 interface AdditionalInfo {
   name: string

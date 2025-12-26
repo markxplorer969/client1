@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     const updateData: any = {
       status: mappedStatus,
       tripay_status: tripayStatus,
-      tripay_signature: body.signature
+      tripay_signature: body.signature,
       tripay_trx_id: body.trx_id,
       paid_amount: body.amount || body.total_amount,
       paid_at: tripayStatus === 'PAID' ? new Date().toISOString() : null

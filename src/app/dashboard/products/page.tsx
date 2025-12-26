@@ -13,6 +13,7 @@ import ProductCard from '@/components/ProductCard'
 import { useAuth } from '@/contexts/AuthContext'
 import { getAllProducts, productDelete } from '@/lib/firebase/db'
 import { toast } from 'sonner'
+import AppFooter from '@/components/AppFooter'
 
 export default function DashboardProductsPage() {
   const { user, isAdmin } = useAuth()

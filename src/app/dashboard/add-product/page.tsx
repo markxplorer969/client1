@@ -17,6 +17,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { productAdd } from '@/lib/firebase/db'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import AppFooter from '@/components/AppFooter'
 
 interface AdditionalInfo {
   name: string
@@ -40,7 +41,7 @@ export default function AddProductPage() {
     stock_available: true,
     show: true,
     rating: 5,
-    sold_count: 0
+    sold_count: 0,
     imageUrl: '',
     image: null as File | null,
     file: null as File | string | null,

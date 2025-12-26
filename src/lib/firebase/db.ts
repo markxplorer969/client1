@@ -212,19 +212,22 @@ export const getAllProducts = async (options: {
   startAfter?: any
 } = {}): Promise<{ status: boolean; data?: Product[]; message?: string }> => {
   try {
-    const { query: queryOpts, sort = { field: 'created_at', direction: 'desc' }, limit: limitNum, startAfter: startAfterDoc } = options
+    const { query: queryOpts, sort, limit: limitNum, startAfter: startAfterDoc } = options
 
     let q = query(collection(db, COLLECTIONS.PRODUCTS))
 
+    // Add where clauses - use only ONE clause to avoid composite index requirement
     if (queryOpts && Object.keys(queryOpts).length > 0) {
-      Object.entries(queryOpts).forEach(([key, value]) => {
-        if (key === 'show' || key === 'stock_available') {
-          q = query(q, where(key, '==', value))
-        }
-      })
+      // Only apply the first filter to avoid composite index requirement
+      const entries = Object.entries(queryOpts)
+      if (entries.length > 0) {
+        const [key, value] = entries[0]
+        q = query(q, where(key, '==', value))
+      }
     }
 
-    if (sort) {
+    // Only add orderBy if explicitly requested and no where clause
+    if (sort && (!queryOpts || Object.keys(queryOpts).length === 0)) {
       q = query(q, orderBy(sort.field, sort.direction))
     }
 
@@ -255,13 +258,11 @@ export const getAllProducts = async (options: {
 
 export const getTopProducts = async (limitCount: number = 8): Promise<{ status: boolean; data?: Product[]; message?: string }> => {
   try {
+    // Get shown products WITHOUT orderBy to avoid index issues
     const q = query(
       collection(db, COLLECTIONS.PRODUCTS),
       where('show', '==', true),
-      where('stock_available', '==', true),
-      orderBy('sales', 'desc'),
-      orderBy('created_at', 'desc'),
-      limit(limitCount)
+      limit(limitCount * 3) // Get more for filtering
     )
 
     const querySnapshot = await getDocs(q)
@@ -275,7 +276,20 @@ export const getTopProducts = async (limitCount: number = 8): Promise<{ status: 
       } as Product
     })
 
-    return { status: true, data: products }
+    // Filter for stock availability and sort in-memory
+    const availableProducts = products.filter(p => p.stock_available === true)
+    availableProducts.sort((a, b) => {
+      // Sort by sales first, then by created_at
+      const salesDiff = (b.sales || 0) - (a.sales || 0)
+      if (salesDiff !== 0) return salesDiff
+      
+      // If sales are equal, sort by created_at (newest first)
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
+      return dateB - dateA
+    })
+
+    return { status: true, data: availableProducts.slice(0, limitCount) }
   } catch (error: any) {
     return { status: false, message: error.message }
   }
@@ -500,17 +514,18 @@ export const cleanupPendingInvoices = async (): Promise<{ status: boolean; messa
   }
 }
 
+
 // Helper function for pagination
 export const getPaginatedProducts = async (
   lastVisible: any = null,
   pageSize: number = 12
 ): Promise<{ status: boolean; data?: Product[]; lastVisible?: any; message?: string }> => {
   try {
+    // Get shown products WITHOUT orderBy to avoid composite index
     let q = query(
       collection(db, COLLECTIONS.PRODUCTS),
       where('show', '==', true),
-      orderBy('created_at', 'desc'),
-      limit(pageSize)
+      limit(pageSize + (lastVisible ? pageSize : 0)) // Get more when paginating
     )
 
     if (lastVisible) {
@@ -528,9 +543,27 @@ export const getPaginatedProducts = async (
       } as Product
     })
 
-    const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1]
+    // Sort by created_at in-memory (newest first)
+    products.sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
+      return dateB - dateA
+    })
 
-    return { status: true, data: products, lastVisible: newLastVisible }
+    // Return requested page size
+    const paginatedProducts = lastVisible
+      ? products.slice(pageSize) // Skip already seen items
+      : products.slice(0, pageSize)
+
+    const newLastVisible = paginatedProducts.length > 0
+      ? paginatedProducts[paginatedProducts.length - 1]
+      : null
+
+    return {
+      status: true,
+      data: paginatedProducts,
+      lastVisible: newLastVisible
+    }
   } catch (error: any) {
     return { status: false, message: error.message }
   }

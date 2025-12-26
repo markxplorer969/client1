@@ -56,7 +56,7 @@ export const POST = requireAuth(async (req: NextRequest, user: any) => {
     // Generate signature
     const signatureData = {
       merchant_ref: merchantRef,
-      amount: total
+      amount: total,
       expired_time: calculateExpiredTime(24) // 24 hours
     }
     const signature = generateSignature(signatureData)

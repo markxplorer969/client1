@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { use } from 'react'  // Add use from react
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,11 +33,10 @@ interface Product {
   file?: string
 }
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const [product, setProduct] = useState<Product | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const productId = params.id
+export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  // Unwrap params Promise using React.use() for Next.js 15
+  const resolvedParams = use(params)
+  const productId = resolvedParams.id
 
   useEffect(() => {
     loadProduct()
@@ -70,7 +70,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
     : null
 
-  const stockAvailable = product?.stock_available !== false && (product?.stock_available || product?.stock! > 0)
+  const stockAvailable = product?.stock_available !== false && ((product?.stock_available ?? 0) > 0 || (product?.stock ?? 0) > 0)
 
   if (isLoading) {
     return (
