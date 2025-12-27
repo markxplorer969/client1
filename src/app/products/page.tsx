@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import ProductList from '@/components/ProductList'
 import FaqSection from '@/components/FaqSection'
 import AppFooter from '@/components/AppFooter'
+import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -43,25 +44,7 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-white hover:text-blue-400 transition-colors">
-              Yilzi Digitalz
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-slate-300 hover:text-white transition-colors hidden md:block">
-                Dashboard
-              </Link>
-              <Link href="/login">
-                <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
-                  Login
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <main className="flex-grow pt-24">

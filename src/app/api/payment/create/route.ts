@@ -50,7 +50,7 @@ export const POST = requireAuth(async (req: NextRequest, user: any) => {
       name: product.name,
       price: total,
       quantity: 1,
-      product_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/product/${product.id}`
+      product_url: `http://localhost:3000/product/${product.id}`
     }]
 
     // Generate signature
@@ -70,7 +70,7 @@ export const POST = requireAuth(async (req: NextRequest, user: any) => {
       order_items: orderItems,
       signature,
       expired_time: calculateExpiredTime(24),
-      callback_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/payment/callback`
+      callback_url: `http://localhost:3000/api/payment/callback`
     }
 
     const tripayResult = await createTransaction(tripayData)

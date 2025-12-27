@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminAuth } from '@/lib/firebase/admin'
 import { getUser, userAdd, userEdit } from '@/lib/firebase/db'
+import { adminEmail } from '@/lib/firebase/config'
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,19 +29,14 @@ export async function POST(request: NextRequest) {
     // Check if user exists in Firestore
     const userResult = await getUser(email)
 
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || ''
-
     if (!userResult.status) {
       // Create new user in Firestore
       const isAdmin = email === adminEmail
-      await userAdd({
+      await userAdd(
         email,
-        name: name || email,
-        isAdmin,
-        uid,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      })
+        name || email,
+        isAdmin
+      )
     } else {
       // Update user name if changed
       if (userResult.data && userResult.data.name !== name) {
@@ -64,7 +60,7 @@ export async function POST(request: NextRequest) {
     // Set httpOnly cookie with Firebase token
     response.cookies.set('firebase_token', idToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/'
@@ -73,7 +69,7 @@ export async function POST(request: NextRequest) {
     // Set additional cookie for backward compatibility
     response.cookies.set('token', idToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/'

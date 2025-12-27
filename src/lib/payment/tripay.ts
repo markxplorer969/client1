@@ -2,13 +2,11 @@ import crypto from 'crypto'
 
 // Tripay Configuration
 const config = {
-  apiKey: process.env.TRIPAY_API_KEY || '',
-  privateKey: process.env.TRIPAY_PRIVATE_KEY || '',
-  merchantCode: process.env.TRIPAY_MERCHANT_CODE || '',
-  mode: process.env.TRIPAY_MODE || 'sandbox', // 'sandbox' or 'production'
-  baseUrl: process.env.TRIPAY_MODE === 'production'
-    ? 'https://tripay.co.id'
-    : 'https://tripay.co.id'
+  apiKey: '', // Set your Tripay API key here
+  privateKey: '', // Set your Tripay private key here
+  merchantCode: '', // Set your Tripay merchant code here
+  mode: 'sandbox', // 'sandbox' or 'production'
+  baseUrl: 'https://tripay.co.id'
 }
 
 /**

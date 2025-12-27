@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import AppFooter from '@/components/AppFooter'
+import Navbar from '@/components/Navbar'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   Package,
@@ -19,7 +20,6 @@ import {
   Edit,
   Trash2,
   Loader2,
-  LogOut,
   ArrowLeft
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -119,13 +119,7 @@ export default function DashboardPage() {
   if (loading || isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
-          <div className="container mx-auto px-4 py-4">
-            <Link href="/" className="text-2xl font-bold text-white">
-              Yilzi Digitalz
-            </Link>
-          </div>
-        </nav>
+        <Navbar />
         <main className="flex-grow pt-24 flex items-center justify-center">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600" />
         </main>
@@ -155,39 +149,10 @@ function AdminDashboard({
 }) {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-xl font-bold text-white hover:text-blue-400 transition-colors">
-                Yilzi Digitalz
-              </Link>
-              <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                Admin
-              </Badge>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-slate-300 hidden md:block">
-                {user?.displayName || user?.email}
-              </span>
-              <Button
-                onClick={onLogout}
-                variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
-      {/* Main Content */}
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-8">
-          {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-slate-800 mb-2">Dashboard Admin</h1>
             <p className="text-slate-600">
@@ -195,7 +160,6 @@ function AdminDashboard({
             </p>
           </div>
 
-          {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card>
               <CardContent className="p-6">
@@ -254,7 +218,6 @@ function AdminDashboard({
             </Card>
           </div>
 
-          {/* Products Management */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Manajemen Produk</CardTitle>
@@ -338,39 +301,10 @@ function UserDashboard({ user, onLogout }: { user: any; onLogout: () => void }) 
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-xl font-bold text-white hover:text-blue-400 transition-colors">
-                Yilzi Digitalz
-              </Link>
-              <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                User
-              </Badge>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-slate-300 hidden md:block">
-                {user?.displayName || user?.email}
-              </span>
-              <Button
-                onClick={onLogout}
-                variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
-      {/* Main Content */}
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-8">
-          {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-slate-800 mb-2">Dashboard Saya</h1>
             <p className="text-slate-600">
@@ -378,7 +312,6 @@ function UserDashboard({ user, onLogout }: { user: any; onLogout: () => void }) 
             </p>
           </div>
 
-          {/* User Info Card */}
           <Card className="mb-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -399,7 +332,6 @@ function UserDashboard({ user, onLogout }: { user: any; onLogout: () => void }) 
             </CardContent>
           </Card>
 
-          {/* Purchase History */}
           <Card>
             <CardHeader>
               <CardTitle>Riwayat Pembelian</CardTitle>
@@ -437,38 +369,33 @@ function UserDashboard({ user, onLogout }: { user: any; onLogout: () => void }) 
                                     invoice.status === 'Paid'
                                       ? 'default'
                                       : invoice.status === 'Pending'
-                                      ? 'secondary'
-                                      : 'destructive'
+                                        ? 'secondary'
+                                        : 'destructive'
                                   }
                                   className={
                                     invoice.status === 'Paid'
                                       ? 'bg-green-600'
                                       : invoice.status === 'Pending'
-                                      ? 'bg-yellow-600'
-                                      : 'bg-red-600'
+                                        ? 'bg-yellow-600'
+                                        : 'bg-red-600'
                                   }
                                 >
                                   {invoice.status}
                                 </Badge>
                               </div>
-                              <p className="text-sm text-slate-600">
-                                {invoice.items.map((item: any) => item.productName).join(', ')}
-                              </p>
-                              <p className="text-sm text-slate-500 mt-1">
-                                {invoice.created_at.toLocaleDateString('id-ID')}
+                              <p className="text-sm text-slate-500">
+                                {new Date(invoice.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-2xl font-bold text-blue-600">
-                                Rp {formatCurrency(invoice.amount)}
-                              </p>
-                              {invoice.status === 'Paid' && (
-                                <Button variant="outline" className="mt-2">
-                                  <ShoppingCart className="w-4 h-4 mr-2" />
-                                  Download
-                                </Button>
-                              )}
+                              <p className="text-2xl font-bold text-slate-800">Rp {formatCurrency(invoice.amount)}</p>
                             </div>
+                          </div>
+                          <div className="border-t border-slate-200 mt-4 pt-4">
+                            <p className="text-sm text-slate-600 mb-2">Produk:</p>
+                            {invoice.items.map((item, idx) => (
+                              <p key={idx} className="text-slate-800">• {item.productName}</p>
+                            ))}
                           </div>
                         </CardContent>
                       </Card>
@@ -477,70 +404,61 @@ function UserDashboard({ user, onLogout }: { user: any; onLogout: () => void }) 
                 </TabsContent>
 
                 <TabsContent value="paid" className="space-y-4 mt-4">
-                  {invoices
-                    .filter((inv) => inv.status === 'Paid')
-                    .map((invoice) => (
+                  {invoices.filter(i => i.status === 'Paid').length === 0 ? (
+                    <div className="text-center py-12">
+                      <ShoppingCart className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                      <p className="text-slate-600 mb-4">Belum ada pembelian yang lunas</p>
+                    </div>
+                  ) : (
+                    invoices.filter(i => i.status === 'Paid').map((invoice) => (
                       <Card key={invoice.id}>
                         <CardContent className="p-6">
                           <div className="flex items-center justify-between">
                             <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <h3 className="font-semibold text-slate-800">{invoice.id}</h3>
-                                <Badge className="bg-green-600">Paid</Badge>
-                              </div>
-                              <p className="text-sm text-slate-600">
-                                {invoice.items.map((item: any) => item.productName).join(', ')}
-                              </p>
-                              <p className="text-sm text-slate-500 mt-1">
-                                {invoice.created_at.toLocaleDateString('id-ID')}
-                              </p>
+                              <h3 className="font-semibold text-slate-800">{invoice.id}</h3>
+                              <Badge className="bg-green-600">{invoice.status}</Badge>
                             </div>
-                            <div className="text-right">
-                              <p className="text-2xl font-bold text-blue-600">
-                                Rp {formatCurrency(invoice.amount)}
-                              </p>
-                              <Button variant="outline" className="mt-2">
-                                <ShoppingCart className="w-4 h-4 mr-2" />
-                                Download
-                              </Button>
-                            </div>
+                            <p className="text-2xl font-bold text-slate-800">Rp {formatCurrency(invoice.amount)}</p>
+                          </div>
+                          <div className="border-t border-slate-200 mt-4 pt-4">
+                            <p className="text-sm text-slate-600 mb-2">Produk:</p>
+                            {invoice.items.map((item, idx) => (
+                              <p key={idx} className="text-slate-800">• {item.productName}</p>
+                            ))}
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
+                    ))
+                  )}
                 </TabsContent>
 
                 <TabsContent value="pending" className="space-y-4 mt-4">
-                  {invoices
-                    .filter((inv) => inv.status === 'Pending')
-                    .map((invoice) => (
+                  {invoices.filter(i => i.status === 'Pending').length === 0 ? (
+                    <div className="text-center py-12">
+                      <ShoppingCart className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                      <p className="text-slate-600 mb-4">Belum ada pembelian yang pending</p>
+                    </div>
+                  ) : (
+                    invoices.filter(i => i.status === 'Pending').map((invoice) => (
                       <Card key={invoice.id}>
                         <CardContent className="p-6">
                           <div className="flex items-center justify-between">
                             <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <h3 className="font-semibold text-slate-800">{invoice.id}</h3>
-                                <Badge className="bg-yellow-600">Pending</Badge>
-                              </div>
-                              <p className="text-sm text-slate-600">
-                                {invoice.items.map((item: any) => item.productName).join(', ')}
-                              </p>
-                              <p className="text-sm text-slate-500 mt-1">
-                                {invoice.created_at.toLocaleDateString('id-ID')}
-                              </p>
+                              <h3 className="font-semibold text-slate-800">{invoice.id}</h3>
+                              <Badge className="bg-yellow-600">{invoice.status}</Badge>
                             </div>
-                            <div className="text-right">
-                              <p className="text-2xl font-bold text-blue-600">
-                                Rp {formatCurrency(invoice.amount)}
-                              </p>
-                              <Button className="mt-2 bg-gradient-to-r from-blue-600 to-indigo-600">
-                                Bayar Sekarang
-                              </Button>
-                            </div>
+                            <p className="text-2xl font-bold text-slate-800">Rp {formatCurrency(invoice.amount)}</p>
+                          </div>
+                          <div className="border-t border-slate-200 mt-4 pt-4">
+                            <p className="text-sm text-slate-600 mb-2">Produk:</p>
+                            {invoice.items.map((item, idx) => (
+                              <p key={idx} className="text-slate-800">• {item.productName}</p>
+                            ))}
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
+                    ))
+                  )}
                 </TabsContent>
               </Tabs>
             </CardContent>

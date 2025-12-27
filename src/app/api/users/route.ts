@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUser, getAllUsers, userEdit, userDelete } from '@/lib/firebase/db'
+import { adminEmail } from '@/lib/firebase/config'
 
 // GET /api/users - Get all users (admin only) or get user by email
 export async function GET(request: NextRequest) {
@@ -54,7 +55,6 @@ export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const email = searchParams.get('email')
-    const adminEmail = process.env.ADMIN_EMAIL || ''
 
     if (!email) {
       return NextResponse.json(

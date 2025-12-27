@@ -11,6 +11,7 @@ import {
   onIdTokenChanged
 } from 'firebase/auth'
 import { auth } from '@/lib/firebase/client'
+import { adminEmail } from '@/lib/firebase/config'
 import { toast } from 'sonner'
 
 interface AuthContextType {
@@ -57,7 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await checkToken(user)
 
         // Check if user is admin
-        const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || ''
         setIsAdmin(user.email === adminEmail)
 
         // Send token to server

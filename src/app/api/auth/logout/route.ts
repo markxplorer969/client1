@@ -19,7 +19,7 @@ export async function POST() {
   cookieNames.forEach(name => {
     response.cookies.set(name, '', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'lax',
       expires: new Date(0),
       path: '/'

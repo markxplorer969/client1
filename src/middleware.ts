@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { adminEmail } from '@/lib/firebase/config'
 
 // Rate limiting store (in-memory for simplicity)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
@@ -49,7 +50,6 @@ function checkRateLimit(identifier: string, limit: number): { success: boolean; 
 
 // Admin email verification
 function isAdmin(email: string | undefined | null): boolean {
-  const adminEmail = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL
   return email === adminEmail
 }
 

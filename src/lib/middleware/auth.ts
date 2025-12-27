@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { getAuth } from 'firebase-admin/auth'
 import { getFirestore, doc, getDoc, setDoc } from 'firebase-admin/firestore'
 import { app } from '@/lib/firebase/admin'
+import { adminEmail } from '@/lib/firebase/config'
 
 // Get current user from token
 export async function getCurrentUser(request: NextRequest) {
@@ -57,7 +58,6 @@ export async function isAdmin(request: NextRequest): Promise<boolean> {
     return false
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL
   return user.email === adminEmail
 }
 
@@ -103,7 +103,6 @@ export function requireAdmin(handler: (req: NextRequest, user: any) => Promise<R
       )
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL
     if (user.email !== adminEmail) {
       return new Response(
         JSON.stringify({

@@ -18,7 +18,7 @@ import {
   type Query,
   type DocumentData
 } from 'firebase/firestore'
-import { db } from './client'
+import { db as adminDb } from './admin'
 import type { User, Product, Invoice } from './types'
 
 // Collection names
@@ -53,11 +53,14 @@ export const toTimestamp = (date: Date | Timestamp | any): Timestamp | Date => {
   return serverTimestamp() as any
 }
 
-// USER FUNCTIONS
+// Helper: Use admin DB for reads (bypasses auth requirements)
+const getReadDB = () => adminDb
+
 export const getUser = async (email: string): Promise<{ status: boolean; data?: User; message?: string }> => {
   try {
-    const userRef = doc(db, COLLECTIONS.USERS, email)
-    const userSnap = await getDoc(userRef)
+    const readDB = getReadDB()
+    const userRef = readDB.doc(COLLECTIONS.USERS, email)
+    const userSnap = await userRef.get()
 
     if (!userSnap.exists()) {
       return { status: false, message: 'Pengguna tidak ditemukan' }
@@ -87,27 +90,27 @@ export const getAllUsers = async (options: {
   try {
     const { query: queryOpts, sort = { field: 'joined_at', direction: 'desc' }, limit: limitNum, startAfter: startAfterDoc } = options
 
-    let q = query(collection(db, COLLECTIONS.USERS))
+    let q = adminDb.collection(COLLECTIONS.USERS)
 
     if (queryOpts && Object.keys(queryOpts).length > 0) {
       Object.entries(queryOpts).forEach(([key, value]) => {
-        q = query(q, where(key, '==', value))
+        q = q.where(key, '==', value)
       })
     }
 
     if (sort) {
-      q = query(q, orderBy(sort.field, sort.direction))
+      q = q.orderBy(sort.field, sort.direction)
     }
 
     if (limitNum) {
-      q = query(q, limit(limitNum))
+      q = q.limit(limitNum)
     }
 
     if (startAfterDoc) {
-      q = query(q, startAfter(startAfterDoc))
+      q = q.startAfter(startAfterDoc)
     }
 
-    const querySnapshot = await getDocs(q)
+    const querySnapshot = await q.get()
     const users = querySnapshot.docs.map(doc => {
       const userData = doc.data() as any
       return {
@@ -134,7 +137,7 @@ export const userAdd = async (email: string, name: string, isAdmin: boolean = fa
       return { status: false, message: 'Email sudah terdaftar' }
     }
 
-    const userRef = doc(db, COLLECTIONS.USERS, email)
+    const userRef = adminDb.doc(COLLECTIONS.USERS, email)
     const userData: Omit<User, 'id'> = {
       email,
       name: name || 'User',
@@ -144,7 +147,7 @@ export const userAdd = async (email: string, name: string, isAdmin: boolean = fa
       last_activity: new Date()
     }
 
-    await setDoc(userRef, userData)
+    await userRef.set(userData)
 
     return { status: true, message: 'Pendaftaran berhasil', data: { id: email, ...userData } }
   } catch (error: any) {
@@ -154,13 +157,13 @@ export const userAdd = async (email: string, name: string, isAdmin: boolean = fa
 
 export const userEdit = async (email: string, updateData: Partial<User>): Promise<{ status: boolean; message?: string }> => {
   try {
-    const userRef = doc(db, COLLECTIONS.USERS, email)
+    const userRef = adminDb.doc(COLLECTIONS.USERS, email)
 
     // Don't update protected fields
     const { id, email: _, role, joined_at, ...allowedUpdates } = updateData as any
     allowedUpdates.last_activity = new Date()
 
-    await updateDoc(userRef, allowedUpdates)
+    await userRef.update(allowedUpdates)
     return { status: true, message: 'Profil pengguna berhasil diperbarui' }
   } catch (error: any) {
     return { status: false, message: error.message }
@@ -173,7 +176,7 @@ export const userDelete = async (email: string, adminEmail: string): Promise<{ s
       return { status: false, message: 'Tidak dapat menghapus akun administrator utama' }
     }
 
-    await deleteDoc(doc(db, COLLECTIONS.USERS, email))
+    await adminDb.doc(COLLECTIONS.USERS, email).delete()
     return { status: true, message: 'Pengguna berhasil dihapus' }
   } catch (error: any) {
     return { status: false, message: error.message }
@@ -183,8 +186,8 @@ export const userDelete = async (email: string, adminEmail: string): Promise<{ s
 // PRODUCT FUNCTIONS
 export const getProduct = async (productId: string): Promise<{ status: boolean; data?: Product; message?: string }> => {
   try {
-    const productRef = doc(db, COLLECTIONS.PRODUCTS, productId)
-    const productSnap = await getDoc(productRef)
+    const productRef = adminDb.doc(COLLECTIONS.PRODUCTS, productId)
+    const productSnap = await productRef.get()
 
     if (!productSnap.exists()) {
       return { status: false, message: 'Produk tidak ditemukan' }
@@ -214,7 +217,7 @@ export const getAllProducts = async (options: {
   try {
     const { query: queryOpts, sort, limit: limitNum, startAfter: startAfterDoc } = options
 
-    let q = query(collection(db, COLLECTIONS.PRODUCTS))
+    let q = adminDb.collection(COLLECTIONS.PRODUCTS)
 
     // Add where clauses - use only ONE clause to avoid composite index requirement
     if (queryOpts && Object.keys(queryOpts).length > 0) {
@@ -222,24 +225,24 @@ export const getAllProducts = async (options: {
       const entries = Object.entries(queryOpts)
       if (entries.length > 0) {
         const [key, value] = entries[0]
-        q = query(q, where(key, '==', value))
+        q = q.where(key, '==', value)
       }
     }
 
     // Only add orderBy if explicitly requested and no where clause
     if (sort && (!queryOpts || Object.keys(queryOpts).length === 0)) {
-      q = query(q, orderBy(sort.field, sort.direction))
+      q = q.orderBy(sort.field, sort.direction)
     }
 
     if (limitNum) {
-      q = query(q, limit(limitNum))
+      q = q.limit(limitNum)
     }
 
     if (startAfterDoc) {
-      q = query(q, startAfter(startAfterDoc))
+      q = q.startAfter(startAfterDoc)
     }
 
-    const querySnapshot = await getDocs(q)
+    const querySnapshot = await q.get()
     const products = querySnapshot.docs.map(doc => {
       const productData = doc.data() as any
       return {
@@ -259,13 +262,11 @@ export const getAllProducts = async (options: {
 export const getTopProducts = async (limitCount: number = 8): Promise<{ status: boolean; data?: Product[]; message?: string }> => {
   try {
     // Get shown products WITHOUT orderBy to avoid index issues
-    const q = query(
-      collection(db, COLLECTIONS.PRODUCTS),
-      where('show', '==', true),
-      limit(limitCount * 3) // Get more for filtering
-    )
+    const q = adminDb.collection(COLLECTIONS.PRODUCTS)
+      .where('show', '==', true)
+      .limit(limitCount * 3) // Get more for filtering
 
-    const querySnapshot = await getDocs(q)
+    const querySnapshot = await q.get()
     const products = querySnapshot.docs.map(doc => {
       const productData = doc.data() as any
       return {
@@ -319,7 +320,7 @@ export const productAdd = async (productData: Partial<Product>): Promise<{ statu
       updated_at: new Date()
     }
 
-    const docRef = await addDoc(collection(db, COLLECTIONS.PRODUCTS), newProduct)
+    const docRef = await adminDb.collection(COLLECTIONS.PRODUCTS).add(newProduct)
     return { status: true, message: 'Produk berhasil ditambahkan', data: { id: docRef.id, ...newProduct } }
   } catch (error: any) {
     return { status: false, message: error.message }
@@ -328,13 +329,13 @@ export const productAdd = async (productData: Partial<Product>): Promise<{ statu
 
 export const productUpdate = async (productId: string, updateData: Partial<Product>): Promise<{ status: boolean; message?: string }> => {
   try {
-    const productRef = doc(db, COLLECTIONS.PRODUCTS, productId)
+    const productRef = adminDb.doc(COLLECTIONS.PRODUCTS, productId)
 
     // Don't update protected fields
     const { id, created_at, ...allowedUpdates } = updateData as any
     allowedUpdates.updated_at = new Date()
 
-    await updateDoc(productRef, allowedUpdates)
+    await productRef.update(allowedUpdates)
     return { status: true, message: 'Produk berhasil diperbarui' }
   } catch (error: any) {
     return { status: false, message: error.message }
@@ -343,10 +344,10 @@ export const productUpdate = async (productId: string, updateData: Partial<Produ
 
 export const productIncrementSales = async (productId: string, amount: number = 1): Promise<{ status: boolean; message?: string }> => {
   try {
-    const productRef = doc(db, COLLECTIONS.PRODUCTS, productId)
+    const productRef = adminDb.doc(COLLECTIONS.PRODUCTS, productId)
 
-    await updateDoc(productRef, {
-      sales: increment(amount),
+    await productRef.update({
+      sales: require('firebase-admin/firestore').increment(amount),
       updated_at: new Date()
     })
 
@@ -358,7 +359,7 @@ export const productIncrementSales = async (productId: string, amount: number = 
 
 export const productDelete = async (productId: string): Promise<{ status: boolean; message?: string }> => {
   try {
-    await deleteDoc(doc(db, COLLECTIONS.PRODUCTS, productId))
+    await adminDb.doc(COLLECTIONS.PRODUCTS, productId).delete()
     return { status: true, message: 'Produk berhasil dihapus' }
   } catch (error: any) {
     return { status: false, message: error.message }
@@ -368,7 +369,7 @@ export const productDelete = async (productId: string): Promise<{ status: boolea
 // INVOICE FUNCTIONS
 export const getInvoice = async (invoiceId: string): Promise<{ status: boolean; data?: Invoice; message?: string }> => {
   try {
-    const invoiceRef = doc(db, COLLECTIONS.INVOICES, invoiceId)
+    const invoiceRef = doc(adminDb, COLLECTIONS.INVOICES, invoiceId)
     const invoiceSnap = await getDoc(invoiceRef)
 
     if (!invoiceSnap.exists()) {
@@ -400,25 +401,25 @@ export const getAllInvoices = async (options: {
   try {
     const { email, sort = { field: 'created_at', direction: 'desc' }, limit: limitNum, startAfter: startAfterDoc } = options
 
-    let q = query(collection(db, COLLECTIONS.INVOICES))
+    let q = adminDb.collection(COLLECTIONS.INVOICES)
 
     if (email) {
-      q = query(q, where('email', '==', email))
+      q = q.where('email', '==', email)
     }
 
     if (sort) {
-      q = query(q, orderBy(sort.field, sort.direction))
+      q = q.orderBy(sort.field, sort.direction)
     }
 
     if (limitNum) {
-      q = query(q, limit(limitNum))
+      q = q.limit(limitNum)
     }
 
     if (startAfterDoc) {
-      q = query(q, startAfter(startAfterDoc))
+      q = q.startAfter(startAfterDoc)
     }
 
-    const querySnapshot = await getDocs(q)
+    const querySnapshot = await q.get()
     const invoices = querySnapshot.docs.map(doc => {
       const invoiceData = doc.data() as any
       return {
@@ -443,7 +444,7 @@ export const invoiceAdd = async (invoiceData: Omit<Invoice, 'id' | 'created_at'>
       created_at: new Date()
     }
 
-    const docRef = await addDoc(collection(db, COLLECTIONS.INVOICES), newInvoice)
+    const docRef = await adminDb.collection(COLLECTIONS.INVOICES).add(newInvoice)
     return { status: true, message: 'Invoice berhasil dibuat', data: { id: docRef.id, ...newInvoice } }
   } catch (error: any) {
     return { status: false, message: error.message }
@@ -452,7 +453,7 @@ export const invoiceAdd = async (invoiceData: Omit<Invoice, 'id' | 'created_at'>
 
 export const invoiceUpdate = async (invoiceId: string, updateData: Partial<Invoice>): Promise<{ status: boolean; message?: string }> => {
   try {
-    const invoiceRef = doc(db, COLLECTIONS.INVOICES, invoiceId)
+    const invoiceRef = adminDb.doc(COLLECTIONS.INVOICES, invoiceId)
 
     // Don't update protected fields
     const { id, created_at, items, amount, ...allowedUpdates } = updateData as any
@@ -461,7 +462,7 @@ export const invoiceUpdate = async (invoiceId: string, updateData: Partial<Invoi
       allowedUpdates.paid_at = new Date()
     }
 
-    await updateDoc(invoiceRef, allowedUpdates)
+    await invoiceRef.update(allowedUpdates)
     return { status: true, message: 'Invoice berhasil diperbarui' }
   } catch (error: any) {
     return { status: false, message: error.message }
@@ -479,7 +480,7 @@ export const invoiceDelete = async (invoiceId: string): Promise<{ status: boolea
       return { status: false, message: 'Tidak dapat menghapus invoice yang sudah lunas' }
     }
 
-    await deleteDoc(doc(db, COLLECTIONS.INVOICES, invoiceId))
+    await adminDb.doc(COLLECTIONS.INVOICES, invoiceId).delete()
     return { status: true, message: 'Invoice berhasil dihapus' }
   } catch (error: any) {
     return { status: false, message: error.message }
@@ -490,15 +491,13 @@ export const cleanupPendingInvoices = async (): Promise<{ status: boolean; messa
   try {
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
 
-    const q = query(
-      collection(db, COLLECTIONS.INVOICES),
-      where('status', '==', 'Pending'),
-      where('created_at', '<', tenMinutesAgo)
-    )
+    const q = adminDb.collection(COLLECTIONS.INVOICES)
+      .where('status', '==', 'Pending')
+      .where('created_at', '<', tenMinutesAgo)
 
-    const querySnapshot = await getDocs(q)
+    const querySnapshot = await q.get()
 
-    const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref))
+    const deletePromises = querySnapshot.docs.map(doc => doc.ref.delete())
     await Promise.all(deletePromises)
 
     if (querySnapshot.size > 0) {
@@ -522,17 +521,15 @@ export const getPaginatedProducts = async (
 ): Promise<{ status: boolean; data?: Product[]; lastVisible?: any; message?: string }> => {
   try {
     // Get shown products WITHOUT orderBy to avoid composite index
-    let q = query(
-      collection(db, COLLECTIONS.PRODUCTS),
-      where('show', '==', true),
-      limit(pageSize + (lastVisible ? pageSize : 0)) // Get more when paginating
-    )
+    let q = adminDb.collection(COLLECTIONS.PRODUCTS)
+      .where('show', '==', true)
+      .limit(pageSize + (lastVisible ? pageSize : 0)) // Get more when paginating
 
     if (lastVisible) {
-      q = query(q, startAfter(lastVisible))
+      q = q.startAfter(lastVisible)
     }
 
-    const querySnapshot = await getDocs(q)
+    const querySnapshot = await q.get()
     const products = querySnapshot.docs.map(doc => {
       const productData = doc.data() as any
       return {
