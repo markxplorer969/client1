@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar'
 import HeroSection from '@/components/home/HeroSection'
 import FeaturedProducts from '@/components/home/FeaturedProducts'
 import ProcessTimeline from '@/components/home/ProcessTimeline'
-import DotPattern from '@/components/home/DotPattern'
+import { DotPattern } from '@/components/home/DotPattern'
 
 export default function Home() {
   return (

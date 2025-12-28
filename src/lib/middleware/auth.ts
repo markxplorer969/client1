@@ -1,16 +1,16 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from 'firebase-admin/auth'
 import { getFirestore, doc, getDoc, setDoc } from 'firebase-admin/firestore'
 import { app } from '@/lib/firebase/admin'
 import { adminEmail } from '@/lib/firebase/config'
 
-// Get current user from token
-export async function getCurrentUser(request: NextRequest) {
+// Helper untuk mengambil user (tetap async)
+export const getCurrentUser = async (req: NextRequest) => {
   try {
     // Get token from cookie or header
-    const token = request.cookies.get('firebase_token')?.value ||
-                 request.cookies.get('token')?.value ||
-                 request.headers.get('authorization')?.replace('Bearer ', '')
+    const token = req.cookies.get('firebase_token')?.value ||
+                 req.cookies.get('token')?.value ||
+                 req.headers.get('authorization')?.replace('Bearer ', '')
 
     if (!token) {
       return null
@@ -51,9 +51,9 @@ export async function getCurrentUser(request: NextRequest) {
   }
 }
 
-// Check if user is admin
-export async function isAdmin(request: NextRequest): Promise<boolean> {
-  const user = await getCurrentUser(request)
+// Helper untuk check admin
+export const isAdmin = async (req: NextRequest): Promise<boolean> => {
+  const user = await getCurrentUser(req)
   if (!user) {
     return false
   }
@@ -61,62 +61,92 @@ export async function isAdmin(request: NextRequest): Promise<boolean> {
   return user.email === adminEmail
 }
 
-// Protect API route - return 401 if not authenticated
-export function requireAuth(handler: (req: NextRequest, user: any) => Promise<Response>) {
+// HOF Wrapper untuk Protect API route - return 401 if not authenticated
+export const requireAuth = (handler: (req: NextRequest, user: any) => Promise<Response>) => {
   return async (req: NextRequest) => {
-    const user = await getCurrentUser(req)
+    try {
+      const user = await getCurrentUser(req)
 
-    if (!user) {
+      if (!user) {
+        return new Response(
+          JSON.stringify({
+            status: false,
+            message: 'Unauthorized. Please login.',
+            error: 'UNAUTHORIZED'
+          }),
+          {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
+          }
+        )
+      }
+
+      return handler(req, user)
+    } catch (error) {
+      console.error('Auth middleware error:', error)
       return new Response(
         JSON.stringify({
           status: false,
-          message: 'Unauthorized. Please login.',
-          error: 'UNAUTHORIZED'
+          message: 'Internal Server Error',
+          error: 'INTERNAL_ERROR'
         }),
         {
-          status: 401,
+          status: 500,
           headers: { 'Content-Type': 'application/json' }
         }
       )
     }
-
-    return handler(req, user)
   }
 }
 
-// Protect admin API route - return 403 if not admin
-export function requireAdmin(handler: (req: NextRequest, user: any) => Promise<Response>) {
+// HOF Wrapper untuk Protect admin API route - return 403 if not admin
+export const requireAdmin = (handler: (req: NextRequest, user: any) => Promise<Response>) => {
   return async (req: NextRequest) => {
-    const user = await getCurrentUser(req)
+    try {
+      const user = await getCurrentUser(req)
 
-    if (!user) {
+      if (!user) {
+        return new Response(
+          JSON.stringify({
+            status: false,
+            message: 'Unauthorized. Please login.',
+            error: 'UNAUTHORIZED'
+          }),
+          {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
+          }
+        )
+      }
+
+      if (user.email !== adminEmail) {
+        return new Response(
+          JSON.stringify({
+            status: false,
+            message: 'Forbidden. Admin access only.',
+            error: 'FORBIDDEN'
+          }),
+          {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' }
+          }
+        )
+      }
+
+      return handler(req, user)
+    } catch (error) {
+      console.error('Admin middleware error:', error)
       return new Response(
         JSON.stringify({
           status: false,
-          message: 'Unauthorized. Please login.',
-          error: 'UNAUTHORIZED'
+          message: 'Internal Server Error',
+          error: 'INTERNAL_ERROR'
         }),
         {
-          status: 401,
+          status: 500,
           headers: { 'Content-Type': 'application/json' }
         }
       )
     }
-
-    if (user.email !== adminEmail) {
-      return new Response(
-        JSON.stringify({
-          status: false,
-          message: 'Forbidden. Admin access only.',
-          error: 'FORBIDDEN'
-        }),
-        {
-          status: 403,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    return handler(req, user)
   }
 }

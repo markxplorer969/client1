@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
 import { adminEmail } from '@/lib/firebase/config'
 
 // Rate limiting store (in-memory for simplicity)

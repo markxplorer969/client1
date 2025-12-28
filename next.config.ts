@@ -27,6 +27,23 @@ const nextConfig: NextConfig = {
 
   // Disable React strict mode (can enable if all components are compatible)
   reactStrictMode: false,
+
+  // Webpack configuration to prevent Node.js modules in client bundle
+  webpack: (config, { isServer }) => {
+    // Prevent Node.js modules from being bundled in client
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        child_process: false,
+        http2: false,
+      };
+    }
+
+    return config;
+  },
 };
 
 export default nextConfig;
