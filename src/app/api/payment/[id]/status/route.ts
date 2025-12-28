@@ -7,10 +7,11 @@ import { getTransactionStatus } from '@/lib/payment/tripay'
 // GET /api/payment/[id]/status - Get Tripay transaction status
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const invoiceId = params.id
+    const { id } = await params
+    const invoiceId = id
 
     // Get invoice from Firestore
     const invoiceResult = await getInvoice(invoiceId)
@@ -100,7 +101,7 @@ export async function GET(
 // POST /api/payment/[id]/status - Manual status check
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   return GET(request, { params })
 }

@@ -7,10 +7,11 @@ import { requireAdmin } from '@/lib/middleware/auth'
 // GET /api/products/[id] - Get product by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const result = await getProduct(params.id)
+    const { id } = await params
+    const result = await getProduct(id)
     return NextResponse.json(result)
   } catch (error: any) {
     console.error('Error fetching product:', error)
@@ -24,8 +25,17 @@ export async function GET(
 // PUT /api/products/[id] - Update product (admin only)
 export const PUT = requireAdmin(async (req: NextRequest, user: any) => {
   try {
-    const { params } = await req.json()
-    const productId = params?.id
+    // Extract ID from URL path
+    const url = new URL(req.url)
+    const pathParts = url.pathname.split('/')
+    const productId = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2]
+
+    if (!productId) {
+      return NextResponse.json(
+        { status: false, message: 'Product ID tidak ditemukan' },
+        { status: 400 }
+      )
+    }
 
     const body = await req.json()
     const productData = {
@@ -48,8 +58,17 @@ export const PUT = requireAdmin(async (req: NextRequest, user: any) => {
 // DELETE /api/products/[id] - Delete product (admin only)
 export const DELETE = requireAdmin(async (req: NextRequest, user: any) => {
   try {
-    const { params } = await req.json()
-    const productId = params?.id
+    // Extract ID from URL path
+    const url = new URL(req.url)
+    const pathParts = url.pathname.split('/')
+    const productId = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2]
+
+    if (!productId) {
+      return NextResponse.json(
+        { status: false, message: 'Product ID tidak ditemukan' },
+        { status: 400 }
+      )
+    }
 
     const result = await productDelete(productId)
     return NextResponse.json(result)
@@ -65,13 +84,14 @@ export const DELETE = requireAdmin(async (req: NextRequest, user: any) => {
 // POST /api/products/[id]/increment-sales - Increment product sales
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const amount = body.amount || 1
 
-    const result = await productIncrementSales(params.id, amount)
+    const result = await productIncrementSales(id, amount)
     return NextResponse.json(result)
   } catch (error: any) {
     console.error('Error incrementing sales:', error)
