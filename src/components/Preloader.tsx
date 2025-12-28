@@ -37,25 +37,25 @@ export default function Preloader({ show = true, progress = 0 }: { show?: boolea
 
   return (
     <div className={cn(
-      'fixed inset-0 z-50 flex items-center justify-center bg-white',
+      'fixed inset-0 z-50 flex items-center justify-center bg-background',
       'transition-opacity duration-500'
     )}>
       <div className="w-full max-w-md p-8">
         {/* Logo/Brand */}
         <div className="flex flex-col items-center mb-8">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-4">
-            <path d="M24 48C37.2548 48 48 37.2548 48 24C48 10.7452 37.2548 0 24 0C10.7452 0 0 10.7452 0 24C0 37.2548 10.7452 48 24 48Z" fill="#3498db"/>
-            <path d="M24 36C30.6274 36 36 30.6274 36 24C36 17.3726 30.6274 12 24 12C17.3726 12 12 17.3726 12 24C12 30.6274 17.3726 36 24 36Z" fill="#ffffff"/>
+            <path d="M24 48C37.2548 48 48 37.2548 48 24C48 10.7452 37.2548 0 24 0C10.7452 0 0 10.7452 0 24C0 37.2548 10.7452 48 24 48Z" fill="currentColor"/>
+            <path d="M24 36C30.6274 36 36 30.6274 36 24C36 17.3726 30.6274 12 24 12C17.3726 12 12 17.3726 12 24C12 30.6274 17.3726 36 24 36Z" fill="currentColor"/>
           </svg>
-          <h2 className="text-3xl font-bold text-slate-800">Yilzi Digitalz</h2>
+          <h2 className="text-3xl font-bold ">Yilzi Digitalz</h2>
         </div>
 
         {/* Progress Bar */}
         <div className="mb-6">
-          <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+          <div className="w-full h-2  rounded-full overflow-hidden">
             <div
               className={cn(
-                'h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-300',
+                'h-full bg-gradient-to-r  rounded-full transition-all duration-300',
                 'shadow-lg'
               )}
               style={{ width: `${currentProgress}%` }}
@@ -65,14 +65,14 @@ export default function Preloader({ show = true, progress = 0 }: { show?: boolea
 
         {/* Percentage */}
         <div className="text-center mb-6">
-          <p className="text-4xl font-bold text-blue-600 mb-2">
+          <p className="text-4xl font-bold  mb-2">
             {currentProgress}%
           </p>
-          <p className="text-slate-600 text-lg">Memuat aplikasi...</p>
+          <p className=" text-lg">Memuat aplikasi...</p>
         </div>
 
         {/* Loading Message */}
-        <p className="text-center text-slate-500">
+        <p className="text-center ">
           Mohon tunggu, sedang memuat pengalaman terbaik untuk Anda...
         </p>
       </div>

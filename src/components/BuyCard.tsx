@@ -12,7 +12,6 @@ import { Alert } from '@/components/Alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
-import { getProduct } from '@/lib/firebase/db'
 
 interface AdditionalInfo {
   name: string
@@ -188,11 +187,11 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
 
   if (isLoading) {
     return (
-      <Card className="bg-white shadow-lg sticky top-24">
+      <Card className="bg-background shadow-lg sticky top-24">
         <CardContent className="p-8">
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-            <p className="ml-3 text-slate-600">Memuat produk...</p>
+            <Loader2 className="w-8 h-8  animate-spin" />
+            <p className="ml-3 ">Memuat produk...</p>
           </div>
         </CardContent>
       </Card>
@@ -202,7 +201,7 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
   const stockAvailable = product?.stock_available !== false && ((product?.stock_available ?? 0) > 0 || (product?.stock ?? 0) > 0)
 
   return (
-    <Card className="bg-white shadow-lg sticky top-24">
+    <Card className="bg-background shadow-lg sticky top-24">
       <CardContent className="p-6 space-y-6">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -223,11 +222,11 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
           <TabsContent value="purchase" className="space-y-6">
             {/* Price Section */}
             <div className="space-y-2">
-              <h3 className="text-2xl font-bold text-blue-600">
+              <h3 className="text-2xl font-bold ">
                 Rp {formatCurrency(product?.price || 0)}
               </h3>
               {product?.original_price && (
-                <span className="text-base text-slate-500 line-through">
+                <span className="text-base  line-through">
                   Rp {formatCurrency(product.original_price)}
                 </span>
               )}
@@ -235,24 +234,24 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
 
             {/* Auth Status */}
             {authLoading ? (
-              <div className="flex items-center gap-2 p-4 bg-blue-50 rounded-lg">
-                <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
-                <p className="text-sm text-slate-600">Memeriksa status login...</p>
+              <div className="flex items-center gap-2 p-4  rounded-lg">
+                <Loader2 className="w-5 h-5  animate-spin" />
+                <p className="text-sm ">Memeriksa status login...</p>
               </div>
             ) : !user ? (
               <Alert
                 variant="info"
                 message="Silakan login untuk melanjutkan pembelian."
-                className="!bg-blue-50 !border-blue-200 !text-blue-800"
+                className="! ! !"
               />
             ) : (
-              <div className="flex items-center gap-2 p-4 bg-green-50 rounded-lg">
-                <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center">
-                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex items-center gap-2 p-4  rounded-lg">
+                <div className="w-5 h-5  rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <p className="text-sm text-slate-700">
+                <p className="text-sm ">
                   Login sebagai <span className="font-semibold">{user?.displayName || user?.email}</span>
                 </p>
               </div>
@@ -263,8 +262,8 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
               <>
                 {/* Additional Information Fields */}
                 {purchaseFormData.length > 0 && (
-                  <div className="space-y-4 p-4 bg-slate-50 rounded-lg">
-                    <h4 className="font-semibold text-slate-800 mb-4">Lengkapi Data Pesanan</h4>
+                  <div className="space-y-4 p-4  rounded-lg">
+                    <h4 className="font-semibold  mb-4">Lengkapi Data Pesanan</h4>
                     {purchaseFormData.map((info, index) => (
                       <div key={index} className="space-y-2">
                         <Label htmlFor={`info-${index}`}>{info.name}</Label>
@@ -282,43 +281,43 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
                 )}
 
                 {/* Payment Summary */}
-                <div className="space-y-3 p-4 bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 rounded-lg">
+                <div className="space-y-3 p-4 bg-gradient-to-r from-background to-muted dark:from-card dark:to-muted rounded-lg">
                   <div className="flex justify-between">
-                    <span className="text-slate-600 dark:text-slate-400">Harga Produk</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                    <span className=" dark:">Harga Produk</span>
+                    <span className="font-semibold  dark:">
                       Rp {formatCurrency(product?.price || 0)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 dark:text-slate-400">Biaya Layanan ({TAX_PERCENT}%)</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                    <span className=" dark:">Biaya Layanan ({TAX_PERCENT}%)</span>
+                    <span className="font-semibold  dark:">
                       Rp {formatCurrency(platformFee)}
                     </span>
                   </div>
-                  <div className="flex justify-between pt-3 border-t border-slate-200 dark:border-slate-700">
-                    <span className="text-lg font-bold text-slate-800 dark:text-slate-200">Total</span>
-                    <span className="text-xl font-bold text-blue-600">
+                  <div className="flex justify-between pt-3 border-t  dark:">
+                    <span className="text-lg font-bold  dark:">Total</span>
+                    <span className="text-xl font-bold ">
                       Rp {formatCurrency(totalPrice)}
                     </span>
                   </div>
                 </div>
 
                 {/* Stock Status */}
-                <div className="flex items-center gap-2 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <div className="flex items-center gap-2 p-4  dark: rounded-lg">
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                    product?.stock_available ? 'bg-green-600' : 'bg-red-600'
+                    product?.stock_available ? '' : ''
                   }`}>
                     {product?.stock_available ? (
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-3 h-3 foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     ) : (
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-3 h-3 foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     )}
                   </div>
-                  <span className={`font-semibold ${product?.stock_available ? 'text-green-700' : 'text-red-700'}`}>
+                  <span className={`font-semibold ${product?.stock_available ? '' : ''}`}>
                     {product?.stock_available ? 'Stok Tersedia' : 'Stok Habis'}
                   </span>
                 </div>
@@ -338,7 +337,7 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
                   <Button
                     variant="outline"
                     onClick={openWhatsApp}
-                    className="flex-1 border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                    className="flex-1 border-border  hover:/20"
                   >
                     <MessageCircle className="w-4 h-4 mr-2" />
                     WhatsApp
@@ -346,7 +345,7 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
                   <Button
                     onClick={handlePurchase}
                     disabled={isPurchasing || !product?.stock_available}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                    className="flex-1 bg-gradient-to-r  foreground"
                   >
                     {isPurchasing ? (
                       <>
@@ -369,14 +368,14 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
               <div className="flex flex-col gap-3">
                 <Button
                   onClick={handleLogin}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold"
+                  className="w-full bg-gradient-to-r  foreground font-semibold"
                 >
                   Login dengan Google
                 </Button>
                 <Button
                   variant="outline"
                   onClick={openWhatsApp}
-                  className="w-full border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                  className="w-full border-border  hover:/20"
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Tanya via WhatsApp
@@ -389,26 +388,26 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
           <TabsContent value="payment" className="space-y-6">
             {!paymentUrl ? (
               <div className="text-center py-8 space-y-4">
-                <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center">
-                  <svg className="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-16 h-16 mx-auto  rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v4a3 3 0 003 3z" />
                   </svg>
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-lg font-bold text-slate-800">Menunggu Pembayaran</h3>
-                  <p className="text-slate-600">Silakan klik tombol "Beli Sekarang" terlebih dahulu untuk membuat invoice.</p>
+                  <h3 className="text-lg font-bold ">Menunggu Pembayaran</h3>
+                  <p className="">Silakan klik tombol "Beli Sekarang" terlebih dahulu untuk membuat invoice.</p>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <h3 className="text-lg font-bold text-slate-800">Metode Pembayaran</h3>
-                  <p className="text-slate-600">Klik tombol di bawah untuk membuka halaman pembayaran Tripay.</p>
+                  <h3 className="text-lg font-bold ">Metode Pembayaran</h3>
+                  <p className="">Klik tombol di bawah untuk membuka halaman pembayaran Tripay.</p>
                 </div>
 
                 <Button
                   onClick={handlePayNow}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                  className="w-full bg-gradient-to-r  foreground"
                 >
                   <svg className="w-5 h-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6h-2" />
@@ -416,14 +415,14 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
                   Bayar Sekarang
                 </Button>
 
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg space-y-2">
+                <div className="p-4  dark:/20 rounded-lg space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-slate-600 dark:text-slate-400">Total Pembayaran</span>
-                    <span className="font-bold text-blue-600 dark:text-blue-400">
+                    <span className=" dark:">Total Pembayaran</span>
+                    <span className="font-bold  dark:">
                       Rp {formatCurrency(totalPrice)}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-500">
+                  <p className="text-xs  dark:">
                     Pembayaran akan diverifikasi otomatis oleh Tripay.
                   </p>
                 </div>
@@ -434,22 +433,22 @@ export default function BuyCard({ product: initialProduct }: BuyCardProps) {
 
         {/* Product Info */}
         {product && (
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-            <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+          <div className="pt-4 border-t  dark:">
+            <div className="space-y-2 text-sm  dark:">
               <div className="flex justify-between">
                 <span>Produk:</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200">{product.name}</span>
+                <span className="font-semibold  dark:">{product.name}</span>
               </div>
               {product.category && (
                 <div className="flex justify-between">
                   <span>Kategori:</span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{product.category}</span>
+                  <span className="font-semibold  dark:">{product.category}</span>
                 </div>
               )}
               {product.sold_count && (
                 <div className="flex justify-between">
                   <span>Terjual:</span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{product.sold_count}</span>
+                  <span className="font-semibold  dark:">{product.sold_count}</span>
                 </div>
               )}
             </div>

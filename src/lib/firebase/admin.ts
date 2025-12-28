@@ -1,5 +1,5 @@
 import { getApps, initializeApp, cert } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
+import { getFirestore, increment } from 'firebase-admin/firestore'
 import { getAuth } from 'firebase-admin/auth'
 import { getStorage } from 'firebase-admin/storage'
 import { firebaseAdminConfig } from './config'
@@ -16,4 +16,4 @@ const db = getFirestore(app)
 const adminAuth = getAuth(app)
 const storage = getStorage(app)
 
-export { app, db, adminAuth, storage }
+export { app, db, adminAuth, storage, increment }

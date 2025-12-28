@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import ProductList from '@/components/ProductList'
-import FaqSection from '@/components/FaqSection'
 import AppFooter from '@/components/AppFooter'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
@@ -42,7 +41,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br ">
       {/* Navbar */}
       <Navbar />
 
@@ -57,32 +56,32 @@ export default function ProductsPage() {
                 Kembali
               </Button>
             </Link>
-            <h1 className="text-5xl font-bold mb-4 text-slate-800 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold mb-4  bg-gradient-to-r  bg-clip-text text-transparent">
               Semua Produk
             </h1>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-xl  max-w-2xl mx-auto">
               Temukan berbagai produk digital berkualitas untuk kebutuhan bisnis Anda. Script, Bot, Website, dan lainnya.
             </p>
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 max-w-3xl mx-auto">
-              <div className="bg-white rounded-xl p-6 shadow-md border border-slate-200">
-                <div className="text-3xl font-bold text-blue-600 mb-2">
+              <div className="bg-background rounded-xl p-6 shadow-md border ">
+                <div className="text-3xl font-bold  mb-2">
                   {isLoading ? '...' : products.length}
                 </div>
-                <div className="text-sm text-slate-600">Total Produk</div>
+                <div className="text-sm ">Total Produk</div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-md border border-slate-200">
-                <div className="text-3xl font-bold text-green-600 mb-2">
+              <div className="bg-background rounded-xl p-6 shadow-md border ">
+                <div className="text-3xl font-bold  mb-2">
                   {isLoading ? '...' : products.filter(p => p.stock_available).length}
                 </div>
-                <div className="text-sm text-slate-600">Tersedia</div>
+                <div className="text-sm ">Tersedia</div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-md border border-slate-200">
-                <div className="text-3xl font-bold text-purple-600 mb-2">
+              <div className="bg-background rounded-xl p-6 shadow-md border ">
+                <div className="text-3xl font-bold  mb-2">
                   {isLoading ? '...' : products.reduce((sum, p) => sum + (p.sold_count || 0), 0)}
                 </div>
-                <div className="text-sm text-slate-600">Terjual</div>
+                <div className="text-sm ">Terjual</div>
               </div>
             </div>
           </div>
@@ -104,14 +103,14 @@ export default function ProductsPage() {
 
           {/* Empty State */}
           {!isLoading && products.length === 0 && (
-            <div className="bg-white rounded-2xl p-12 text-center shadow-md border border-slate-200">
-              <div className="w-20 h-20 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
-                <svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-background rounded-2xl p-12 text-center shadow-md border ">
+              <div className="w-20 h-20 mx-auto mb-4  rounded-full flex items-center justify-center">
+                <svg className="w-10 h-10 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 002 2H6a2 2 0 002-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414-2.414a1 1 0 01-.293-.707V5a2 2 0 012-2h2.586a1 1 0 001.414.586l2.414 2.414a1 1 0 01.293.707L20 12.586V10" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">Belum Ada Produk</h3>
-              <p className="text-slate-600 mb-6 max-w-md mx-auto">
+              <h3 className="text-2xl font-bold  mb-2">Belum Ada Produk</h3>
+              <p className=" mb-6 max-w-md mx-auto">
                 Saat ini tidak ada produk yang tersedia. Nantikan produk digital terbaru dari kami!
               </p>
               <div className="flex gap-3 justify-center">
@@ -122,7 +121,7 @@ export default function ProductsPage() {
                   Refresh
                 </Button>
                 <Link href="/">
-                  <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
+                  <Button className="bg-gradient-to-r  foreground">
                     Kembali ke Beranda
                   </Button>
                 </Link>
@@ -131,8 +130,6 @@ export default function ProductsPage() {
           )}
         </section>
 
-        {/* FAQ Section */}
-        {!isLoading && products.length > 0 && <FaqSection />}
       </main>
 
       <AppFooter />

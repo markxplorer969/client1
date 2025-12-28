@@ -8,6 +8,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { idToken } = body
 
+    console.log('[Login API] Received login request with token')
+
     if (!idToken) {
       return NextResponse.json(
         { status: false, message: 'ID token diperlukan' },
@@ -19,6 +21,8 @@ export async function POST(request: NextRequest) {
     const decodedToken = await adminAuth.verifyIdToken(idToken)
     const { email, name, uid } = decodedToken
 
+    console.log('[Login API] Token verified for email:', email)
+
     if (!email) {
       return NextResponse.json(
         { status: false, message: 'Invalid token' },
@@ -27,17 +31,30 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists in Firestore
+    console.log('[Login API] Checking if user exists...')
     const userResult = await getUser(email)
 
     if (!userResult.status) {
+      console.log('[Login API] User does not exist, creating new user...')
       // Create new user in Firestore
       const isAdmin = email === adminEmail
-      await userAdd(
+      const addResult = await userAdd(
         email,
         name || email,
         isAdmin
       )
+
+      if (!addResult.status) {
+        console.error('[Login API] Failed to create user:', addResult.message)
+        return NextResponse.json(
+          { status: false, message: addResult.message || 'Gagal membuat pengguna' },
+          { status: 500 }
+        )
+      }
+
+      console.log('[Login API] User created successfully')
     } else {
+      console.log('[Login API] User exists, updating...')
       // Update user name if changed
       if (userResult.data && userResult.data.name !== name) {
         await userEdit(email, { name: name || userResult.data.name })
@@ -77,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error: any) {
-    console.error('Login error:', error)
+    console.error('[Login API] Login error:', error)
 
     // Check if it's an auth error
     if (error.code === 'auth/id-token-expired') {

@@ -207,11 +207,11 @@ export default function InvoiceDetailPage() {
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      Paid: { label: 'Lunas', variant: 'success' as const, bg: 'bg-green-100 text-green-800' },
-      Paid_Lunas: { label: 'Lunas', variant: 'success' as const, bg: 'bg-green-100 text-green-800' },
-      Pending: { label: 'Menunggu Pembayaran', variant: 'warning' as const, bg: 'bg-yellow-100 text-yellow-800' },
-      Expired: { label: 'Kadaluwarsa', variant: 'destructive' as const, bg: 'bg-red-100 text-red-800' },
-      Failed: { label: 'Gagal', variant: 'destructive' as const, bg: 'bg-red-100 text-red-800' }
+      Paid: { label: 'Lunas', variant: 'success' as const, bg: ' ' },
+      Paid_Lunas: { label: 'Lunas', variant: 'success' as const, bg: ' ' },
+      Pending: { label: 'Menunggu Pembayaran', variant: 'warning' as const, bg: ' ' },
+      Expired: { label: 'Kadaluwarsa', variant: 'destructive' as const, bg: ' ' },
+      Failed: { label: 'Gagal', variant: 'destructive' as const, bg: ' ' }
     }
 
     return variants[status as keyof typeof variants] || variants.Pending
@@ -239,10 +239,10 @@ export default function InvoiceDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br ">
         <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-lg text-slate-600">Memuat invoice...</p>
+          <div className="w-16 h-16 border-4  border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-lg ">Memuat invoice...</p>
         </div>
       </div>
     )
@@ -250,15 +250,15 @@ export default function InvoiceDetailPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br  p-4">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center space-y-4">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-              <XCircle className="w-8 h-8 text-red-600" />
+            <div className="w-16 h-16  rounded-full flex items-center justify-center mx-auto">
+              <XCircle className="w-8 h-8 " />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-bold text-slate-800">Gagal Memuat Invoice</h3>
-              <p className="text-slate-600">{error}</p>
+              <h3 className="text-xl font-bold ">Gagal Memuat Invoice</h3>
+              <p className="">{error}</p>
             </div>
             <div className="flex gap-3 justify-center">
               <Button
@@ -289,19 +289,19 @@ export default function InvoiceDetailPage() {
   const fee = calculateFee()
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br ">
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
+      <nav className="fixed top-0 left-0 right-0 z-50 /95 backdrop-blur-md border-b border-border/10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <a
                 href="/"
-                className="text-xl font-bold text-white hover:text-blue-400 transition-colors"
+                className="text-xl font-bold foreground hover: transition-colors"
               >
                 Yilzi Digitalz
               </a>
-              <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+              <Badge className="bg-gradient-to-r  foreground">
                 Invoice
               </Badge>
             </div>
@@ -309,7 +309,7 @@ export default function InvoiceDetailPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-white hover:text-blue-400"
+                className="foreground hover:"
                 onClick={() => window.location.href = '/dashboard'}
               >
                 Dashboard
@@ -332,8 +332,8 @@ export default function InvoiceDetailPage() {
               Kembali
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-slate-800">Detail Invoice</h1>
-              <p className="text-slate-600">Invoice #{invoiceId}</p>
+              <h1 className="text-3xl font-bold ">Detail Invoice</h1>
+              <p className="">Invoice #{invoiceId}</p>
             </div>
           </div>
 
@@ -343,7 +343,7 @@ export default function InvoiceDetailPage() {
               <Card className="h-full">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <QrCode className="w-5 h-5 text-blue-600" />
+                    <QrCode className="w-5 h-5 " />
                     Pindai untuk Membayar
                   </CardTitle>
                 </CardHeader>
@@ -352,7 +352,7 @@ export default function InvoiceDetailPage() {
                     <>
                       {/* QR Code */}
                       {invoice.qr && (
-                        <div className="bg-white p-4 rounded-lg border border-slate-200">
+                        <div className="bg-background p-4 rounded-lg border ">
                           <img
                             src={invoice.qr}
                             alt="QRIS Payment Code"
@@ -366,7 +366,7 @@ export default function InvoiceDetailPage() {
                         <Alert
                           variant="warning"
                           message={`Bayar sebelum: ${countdownText}`}
-                          className="!bg-yellow-50 !border-yellow-200 !text-yellow-800"
+                          className="! !border-yellow-200 !"
                         >
                           <Clock className="w-5 h-5" />
                         </Alert>
@@ -376,11 +376,11 @@ export default function InvoiceDetailPage() {
                       <Button
                         onClick={() => checkPaymentStatus(true)}
                         disabled={isCheckingPayment || invoice.status !== 'Pending'}
-                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                        className="w-full bg-gradient-to-r  foreground"
                       >
                         {isCheckingPayment ? (
                           <>
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                            <div className="w-4 h-4 border-2 border-border border-t-transparent rounded-full animate-spin mr-2"></div>
                             Mengecek...
                           </>
                         ) : (
@@ -392,7 +392,7 @@ export default function InvoiceDetailPage() {
                       </Button>
 
                       {/* Instructions */}
-                      <div className="space-y-2 text-sm text-slate-600">
+                      <div className="space-y-2 text-sm ">
                         <p className="font-semibold">Cara Pembayaran:</p>
                         <ol className="list-decimal list-inside space-y-1">
                           <li>Scan QR code dengan aplikasi e-wallet atau M-Banking</li>
@@ -411,7 +411,7 @@ export default function InvoiceDetailPage() {
                         <Badge className={statusBadge.bg}>{statusBadge.label}</Badge>
                       </div>
                       {invoice.status === 'Expired' && (
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm ">
                           Waktu pembayaran telah habis. Silakan buat pesanan baru.
                         </p>
                       )}
@@ -427,7 +427,7 @@ export default function InvoiceDetailPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <FileText className="w-5 h-5 text-blue-600" />
+                      <FileText className="w-5 h-5 " />
                       Detail Transaksi
                     </div>
                     <Badge className={`${statusBadge.bg} flex items-center gap-2`}>
@@ -440,26 +440,26 @@ export default function InvoiceDetailPage() {
                   {/* Transaction Details */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <p className="text-sm text-slate-600">ID Transaksi</p>
-                      <p className="font-semibold text-slate-800">{invoice.id}</p>
+                      <p className="text-sm ">ID Transaksi</p>
+                      <p className="font-semibold ">{invoice.id}</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm text-slate-600">Email</p>
-                      <p className="font-semibold text-slate-800">{invoice.email}</p>
+                      <p className="text-sm ">Email</p>
+                      <p className="font-semibold ">{invoice.email}</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm text-slate-600">Tanggal</p>
-                      <p className="font-semibold text-slate-800">{formatDate(invoice.createdAt || invoice.created_at)}</p>
+                      <p className="text-sm ">Tanggal</p>
+                      <p className="font-semibold ">{formatDate(invoice.createdAt || invoice.created_at)}</p>
                     </div>
                     {invoice.paidAt && (
                       <div className="space-y-1">
-                        <p className="text-sm text-slate-600">Dibayar Pada</p>
-                        <p className="font-semibold text-slate-800">{formatDate(invoice.paidAt)}</p>
+                        <p className="text-sm ">Dibayar Pada</p>
+                        <p className="font-semibold ">{formatDate(invoice.paidAt)}</p>
                       </div>
                     )}
                     <div className="space-y-1">
-                      <p className="text-sm text-slate-600">Metode Pembayaran</p>
-                      <p className="font-semibold text-slate-800">{invoice.payment_method?.toUpperCase()}</p>
+                      <p className="text-sm ">Metode Pembayaran</p>
+                      <p className="font-semibold ">{invoice.payment_method?.toUpperCase()}</p>
                     </div>
                   </div>
 
@@ -467,26 +467,26 @@ export default function InvoiceDetailPage() {
                   {invoice.additional_information && invoice.additional_information.length > 0 && (
                     <>
                       <div className="space-y-3">
-                        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <h3 className="text-lg font-bold  flex items-center gap-2">
                           <FileText className="w-5 h-5" />
                           Informasi Pesanan
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {invoice.additional_information.map((info, index) => (
                             <div key={index} className="space-y-1">
-                              <p className="text-sm text-slate-600">{info.name}</p>
-                              <p className="font-semibold text-slate-800">{info.value}</p>
+                              <p className="text-sm ">{info.name}</p>
+                              <p className="font-semibold ">{info.value}</p>
                             </div>
                           ))}
                         </div>
                       </div>
-                      <div className="border-t border-slate-200" />
+                      <div className="border-t " />
                     </>
                   )}
 
                   {/* Order Summary */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <h3 className="text-lg font-bold  flex items-center gap-2">
                       <FileText className="w-5 h-5" />
                       Ringkasan Pesanan
                     </h3>
@@ -495,14 +495,14 @@ export default function InvoiceDetailPage() {
                       {invoice.items.map((item, index) => (
                         <div key={index} className="flex justify-between items-center">
                           <div className="flex-grow">
-                            <p className="font-medium text-slate-800">
+                            <p className="font-medium ">
                               {item.name}
-                              <span className="text-slate-600 text-sm ml-2">
+                              <span className=" text-sm ml-2">
                                 (x{item.quantity})
                               </span>
                             </p>
                           </div>
-                          <p className="font-semibold text-slate-800">
+                          <p className="font-semibold ">
                             {formatCurrency(item.price)}
                           </p>
                         </div>
@@ -513,15 +513,15 @@ export default function InvoiceDetailPage() {
                   {/* Fee */}
                   {fee > 0 && (
                     <div className="flex justify-between">
-                      <p className="text-slate-600">Biaya Penanganan</p>
-                      <p className="text-slate-800">{formatCurrency(fee)}</p>
+                      <p className="">Biaya Penanganan</p>
+                      <p className="">{formatCurrency(fee)}</p>
                     </div>
                   )}
 
                   {/* Total */}
                   <div className="flex justify-between items-center py-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-lg px-4">
-                    <p className="text-lg font-bold text-slate-800">Total Pembayaran</p>
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-lg font-bold ">Total Pembayaran</p>
+                    <p className="text-2xl font-bold ">
                       {formatCurrency(invoice.amount)}
                     </p>
                   </div>
@@ -529,9 +529,9 @@ export default function InvoiceDetailPage() {
                   {/* Download Section */}
                   {(invoice.status === 'Paid' || invoice.status === 'Paid_Lunas') ? (
                     <>
-                      <div className="border-t border-slate-200" />
+                      <div className="border-t " />
                       <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <h3 className="text-lg font-bold  flex items-center gap-2">
                           <Download className="w-5 h-5" />
                           File Download
                         </h3>
@@ -540,7 +540,7 @@ export default function InvoiceDetailPage() {
                           <Alert
                             variant="danger"
                             message="Sesi unduhan telah berakhir. Silakan hubungi admin jika Anda mengalami kendala."
-                            className="!bg-red-50 !border-red-200 !text-red-800"
+                            className="! ! !"
                           >
                             <AlertTriangle className="w-5 h-5" />
                           </Alert>
@@ -554,7 +554,7 @@ export default function InvoiceDetailPage() {
                                 rel="noopener noreferrer"
                                 className="block"
                               >
-                                <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white">
+                                <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 foreground">
                                   <Download className="w-4 h-4 mr-2" />
                                   Download {item.name}
                                 </Button>
@@ -562,14 +562,14 @@ export default function InvoiceDetailPage() {
                             ))}
                           </div>
                         ) : (
-                          <p className="text-slate-600 text-sm">
+                          <p className=" text-sm">
                             Tidak ada file yang tersedia untuk diunduh.
                           </p>
                         )}
 
                         {/* Download Expiration Warning */}
                         {!isDownloadExpired && invoice.paidAt && (
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs ">
                             Link download akan kedaluwarsa dalam 1 jam setelah pembayaran.
                           </p>
                         )}

@@ -11,12 +11,11 @@ import { Badge } from '@/components/ui/badge'
 import { Alert } from '@/components/Alert'
 import ProductCard from '@/components/ProductCard'
 import { useAuth } from '@/contexts/AuthContext'
-import { getAllProducts, productDelete } from '@/lib/firebase/db'
 import { toast } from 'sonner'
 import AppFooter from '@/components/AppFooter'
 
 export default function DashboardProductsPage() {
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, loading } = useAuth()
   const router = useRouter()
   const [products, setProducts] = useState<any[]>([])
   const [filteredProducts, setFilteredProducts] = useState<any[]>([])
@@ -46,13 +45,13 @@ export default function DashboardProductsPage() {
     loadProducts()
   }, [user, isAdmin, loading, router])
 
-  const loading = false
-
   const loadProducts = async () => {
     setIsLoading(true)
     setError(null)
     try {
-      const result = await getAllProducts()
+      const response = await fetch('/api/products')
+      const result = await response.json()
+
       if (result.status && result.data) {
         setProducts(result.data)
         setFilteredProducts(result.data)
@@ -67,17 +66,6 @@ export default function DashboardProductsPage() {
     }
   }
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value.toLowerCase()
-    setSearchQuery(query)
-
-    const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(query) ||
-      (product.description && product.description.toLowerCase().includes(query))
-    )
-    setFilteredProducts(filtered)
-  }
-
   const handleDelete = async (productId: string, productName: string) => {
     if (!confirm(`Apakah Anda yakin ingin menghapus produk "${productName}"?`)) {
       return
@@ -85,7 +73,11 @@ export default function DashboardProductsPage() {
 
     setIsDeleting(productId)
     try {
-      const result = await productDelete(productId)
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'DELETE'
+      })
+      const result = await response.json()
+
       if (result.status) {
         toast.success('Produk Dihapus', {
           description: `Produk "${productName}" berhasil dihapus`
@@ -104,6 +96,17 @@ export default function DashboardProductsPage() {
     }
   }
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value.toLowerCase()
+    setSearchQuery(query)
+
+    const filtered = products.filter(product =>
+      product.name.toLowerCase().includes(query) ||
+      (product.description && product.description.toLowerCase().includes(query))
+    )
+    setFilteredProducts(filtered)
+  }
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('id-ID').format(value || 0)
   }
@@ -111,21 +114,21 @@ export default function DashboardProductsPage() {
   const categories = [...new Set(products.map(p => p.category).filter(Boolean))]
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br ">
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
+      <nav className="fixed top-0 left-0 right-0 z-50 /95 backdrop-blur-md border-b border-border/10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl font-bold text-white hover:text-blue-400 transition-colors">
+              <Link href="/dashboard" className="text-xl font-bold foreground hover: transition-colors">
                 Yilzi Digitalz
               </Link>
-              <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+              <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 foreground">
                 Admin
               </Badge>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-slate-300 hidden md:block">
+              <span className=" hidden md:block">
                 {user?.displayName || user?.email}
               </span>
             </div>
@@ -142,17 +145,17 @@ export default function DashboardProductsPage() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/dashboard"
-                  className="p-2 bg-slate-200 hover:bg-slate-300 rounded-lg transition-colors"
+                  className="p-2  hover: rounded-lg transition-colors"
                 >
-                  <ArrowLeft className="w-5 h-5 text-slate-700" />
+                  <ArrowLeft className="w-5 h-5 " />
                 </Link>
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-800">Manajemen Produk</h1>
-                  <p className="text-slate-600">Kelola semua produk toko Anda</p>
+                  <h1 className="text-3xl font-bold ">Manajemen Produk</h1>
+                  <p className="">Kelola semua produk toko Anda</p>
                 </div>
               </div>
               <Link href="/dashboard/add-product">
-                <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
+                <Button className="bg-gradient-to-r  foreground">
                   <Plus className="w-4 h-4 mr-2" />
                   Tambah Produk Baru
                 </Button>
@@ -165,11 +168,11 @@ export default function DashboardProductsPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-slate-600 mb-1">Total Produk</p>
-                      <p className="text-2xl font-bold text-slate-800">{products.length}</p>
+                      <p className="text-sm font-medium  mb-1">Total Produk</p>
+                      <p className="text-2xl font-bold ">{products.length}</p>
                     </div>
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Filter className="w-5 h-5 text-blue-600" />
+                    <div className="w-10 h-10  rounded-lg flex items-center justify-center">
+                      <Filter className="w-5 h-5 " />
                     </div>
                   </div>
                 </CardContent>
@@ -178,13 +181,13 @@ export default function DashboardProductsPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-slate-600 mb-1">Tersedia</p>
-                      <p className="text-2xl font-bold text-green-600">
+                      <p className="text-sm font-medium  mb-1">Tersedia</p>
+                      <p className="text-2xl font-bold ">
                         {products.filter(p => p.stock_available).length}
                       </p>
                     </div>
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <Search className="w-5 h-5 text-green-600" />
+                    <div className="w-10 h-10  rounded-lg flex items-center justify-center">
+                      <Search className="w-5 h-5 " />
                     </div>
                   </div>
                 </CardContent>
@@ -193,13 +196,13 @@ export default function DashboardProductsPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-slate-600 mb-1">Habis</p>
-                      <p className="text-2xl font-bold text-red-600">
+                      <p className="text-sm font-medium  mb-1">Habis</p>
+                      <p className="text-2xl font-bold ">
                         {products.filter(p => !p.stock_available).length}
                       </p>
                     </div>
-                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                      <Filter className="w-5 h-5 text-red-600" />
+                    <div className="w-10 h-10  rounded-lg flex items-center justify-center">
+                      <Filter className="w-5 h-5 " />
                     </div>
                   </div>
                 </CardContent>
@@ -208,13 +211,13 @@ export default function DashboardProductsPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-slate-600 mb-1">Total Penjualan</p>
-                      <p className="text-2xl font-bold text-purple-600">
+                      <p className="text-sm font-medium  mb-1">Total Penjualan</p>
+                      <p className="text-2xl font-bold ">
                         {products.reduce((sum, p) => sum + (p.sold_count || 0), 0)}
                       </p>
                     </div>
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <Filter className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10  rounded-lg flex items-center justify-center">
+                      <Filter className="w-5 h-5 " />
                     </div>
                   </div>
                 </CardContent>
@@ -224,7 +227,7 @@ export default function DashboardProductsPage() {
             {/* Search & Filter */}
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="flex-grow relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 " />
                 <Input
                   type="text"
                   placeholder="Cari produk..."
@@ -236,7 +239,7 @@ export default function DashboardProductsPage() {
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="md:w-64 p-2.5 bg-white border border-slate-200 rounded-lg"
+                className="md:w-64 p-2.5 bg-background border  rounded-lg"
               >
                 <option value="">Semua Kategori</option>
                 {categories.map(category => (
@@ -260,24 +263,24 @@ export default function DashboardProductsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
                   <Card key={i} className="h-80">
-                    <div className="h-full bg-slate-200 animate-pulse rounded-lg" />
+                    <div className="h-full  animate-pulse rounded-lg" />
                   </Card>
                 ))}
               </div>
             ) : filteredProducts.length === 0 ? (
               <Card className="text-center p-12">
-                <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
-                  <Search className="w-8 h-8 text-slate-400" />
+                <div className="w-16 h-16 mx-auto mb-4  rounded-full flex items-center justify-center">
+                  <Search className="w-8 h-8 " />
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">Tidak Ada Produk</h3>
-                <p className="text-slate-600 mb-6">
+                <h3 className="text-xl font-bold  mb-2">Tidak Ada Produk</h3>
+                <p className=" mb-6">
                   {searchQuery || filterCategory
                     ? 'Tidak ada produk yang sesuai dengan pencarian'
                     : 'Belum ada produk yang ditambahkan'}
                 </p>
                 {!searchQuery && !filterCategory && (
                   <Link href="/dashboard/add-product">
-                    <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
+                    <Button className="bg-gradient-to-r  foreground">
                       <Plus className="w-4 h-4 mr-2" />
                       Tambah Produk Pertama
                     </Button>
@@ -290,7 +293,7 @@ export default function DashboardProductsPage() {
                 {filteredProducts.map((product) => (
                   <Card key={product.id} className="group overflow-hidden">
                     {/* Image */}
-                    <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden relative">
+                    <div className="aspect-[4/3] bg-gradient-to-br  overflow-hidden relative">
                       <img
                         src={product.imageUrl || product.image || '/images/hero-fallback.jpg'}
                         alt={product.name}
@@ -299,7 +302,7 @@ export default function DashboardProductsPage() {
                       {/* Actions */}
                       <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Link href={`/dashboard/product/${product.id}`}>
-                          <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white">
+                          <Button size="sm" variant="secondary" className="bg-background/90 hover:bg-background">
                             <Pencil className="w-4 h-4" />
                           </Button>
                         </Link>
@@ -308,10 +311,10 @@ export default function DashboardProductsPage() {
                           variant="destructive"
                           onClick={() => handleDelete(product.id, product.name)}
                           disabled={isDeleting === product.id}
-                          className="bg-red-600 hover:bg-red-700"
+                          className=" hover:"
                         >
                           {isDeleting === product.id ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <div className="w-4 h-4 border-2 border-border border-t-transparent rounded-full animate-spin" />
                           ) : (
                             <Trash2 className="w-4 h-4" />
                           )}
@@ -323,23 +326,23 @@ export default function DashboardProductsPage() {
                     <CardContent className="p-4">
                       {/* Badge */}
                       {product.label && (
-                        <Badge className="mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                        <Badge className="mb-2 bg-gradient-to-r  foreground">
                           {product.label}
                         </Badge>
                       )}
 
                       {/* Name */}
-                      <h3 className="text-lg font-bold text-slate-800 mb-2 line-clamp-2">
+                      <h3 className="text-lg font-bold  mb-2 line-clamp-2">
                         {product.name}
                       </h3>
 
                       {/* Price */}
                       <div className="flex items-baseline gap-2 mb-2">
-                        <span className="text-xl font-bold text-blue-600">
+                        <span className="text-xl font-bold ">
                           Rp {formatCurrency(product.price)}
                         </span>
                         {product.original_price && (
-                          <span className="text-sm text-slate-500 line-through">
+                          <span className="text-sm  line-through">
                             Rp {formatCurrency(product.original_price)}
                           </span>
                         )}
@@ -351,7 +354,7 @@ export default function DashboardProductsPage() {
                           {product.stock_available ? 'Tersedia' : 'Habis'}
                         </Badge>
                         {product.sold_count && (
-                          <span className="text-sm text-slate-600">
+                          <span className="text-sm ">
                             {product.sold_count} terjual
                           </span>
                         )}

@@ -1,19 +1,15 @@
 import {
-  collection,
-  doc,
   getDoc,
-  getDocs,
   addDoc,
   updateDoc,
   deleteDoc,
   setDoc,
+  collection,
   query,
   where,
   orderBy,
   limit,
   startAfter,
-  serverTimestamp,
-  increment,
   Timestamp,
   type Query,
   type DocumentData
@@ -56,10 +52,11 @@ export const toTimestamp = (date: Date | Timestamp | any): Timestamp | Date => {
 // Helper: Use admin DB for reads (bypasses auth requirements)
 const getReadDB = () => adminDb
 
+// USER FUNCTIONS (Server-side only)
 export const getUser = async (email: string): Promise<{ status: boolean; data?: User; message?: string }> => {
   try {
     const readDB = getReadDB()
-    const userRef = readDB.doc(COLLECTIONS.USERS, email)
+    const userRef = readDB.collection(COLLECTIONS.USERS).doc(email)
     const userSnap = await userRef.get()
 
     if (!userSnap.exists()) {
@@ -137,7 +134,6 @@ export const userAdd = async (email: string, name: string, isAdmin: boolean = fa
       return { status: false, message: 'Email sudah terdaftar' }
     }
 
-    const userRef = adminDb.doc(COLLECTIONS.USERS, email)
     const userData: Omit<User, 'id'> = {
       email,
       name: name || 'User',
@@ -147,25 +143,32 @@ export const userAdd = async (email: string, name: string, isAdmin: boolean = fa
       last_activity: new Date()
     }
 
+    const userRef = adminDb.collection(COLLECTIONS.USERS).doc(email)
     await userRef.set(userData)
+
+    console.log('[userAdd] User document created:', email)
 
     return { status: true, message: 'Pendaftaran berhasil', data: { id: email, ...userData } }
   } catch (error: any) {
+    console.error('[userAdd] Error creating user:', error)
     return { status: false, message: error.message }
   }
 }
 
 export const userEdit = async (email: string, updateData: Partial<User>): Promise<{ status: boolean; message?: string }> => {
   try {
-    const userRef = adminDb.doc(COLLECTIONS.USERS, email)
+    const userRef = adminDb.collection(COLLECTIONS.USERS).doc(email)
 
     // Don't update protected fields
     const { id, email: _, role, joined_at, ...allowedUpdates } = updateData as any
     allowedUpdates.last_activity = new Date()
 
     await userRef.update(allowedUpdates)
+
+    console.log('[userEdit] User document updated:', email)
     return { status: true, message: 'Profil pengguna berhasil diperbarui' }
   } catch (error: any) {
+    console.error('[userEdit] Error updating user:', error)
     return { status: false, message: error.message }
   }
 }
@@ -176,17 +179,17 @@ export const userDelete = async (email: string, adminEmail: string): Promise<{ s
       return { status: false, message: 'Tidak dapat menghapus akun administrator utama' }
     }
 
-    await adminDb.doc(COLLECTIONS.USERS, email).delete()
+    await adminDb.collection(COLLECTIONS.USERS).doc(email).delete()
     return { status: true, message: 'Pengguna berhasil dihapus' }
   } catch (error: any) {
     return { status: false, message: error.message }
   }
 }
 
-// PRODUCT FUNCTIONS
+// PRODUCT FUNCTIONS (Server-side only)
 export const getProduct = async (productId: string): Promise<{ status: boolean; data?: Product; message?: string }> => {
   try {
-    const productRef = adminDb.doc(COLLECTIONS.PRODUCTS, productId)
+    const productRef = adminDb.collection(COLLECTIONS.PRODUCTS).doc(productId)
     const productSnap = await productRef.get()
 
     if (!productSnap.exists()) {
@@ -221,7 +224,7 @@ export const getAllProducts = async (options: {
 
     // Add where clauses - use only ONE clause to avoid composite index requirement
     if (queryOpts && Object.keys(queryOpts).length > 0) {
-      // Only apply the first filter to avoid composite index requirement
+      // Only apply to first filter to avoid composite index requirement
       const entries = Object.entries(queryOpts)
       if (entries.length > 0) {
         const [key, value] = entries[0]
@@ -283,7 +286,7 @@ export const getTopProducts = async (limitCount: number = 8): Promise<{ status: 
       // Sort by sales first, then by created_at
       const salesDiff = (b.sales || 0) - (a.sales || 0)
       if (salesDiff !== 0) return salesDiff
-      
+
       // If sales are equal, sort by created_at (newest first)
       const dateA = a.created_at ? new Date(a.created_at).getTime() : 0
       const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
@@ -329,7 +332,7 @@ export const productAdd = async (productData: Partial<Product>): Promise<{ statu
 
 export const productUpdate = async (productId: string, updateData: Partial<Product>): Promise<{ status: boolean; message?: string }> => {
   try {
-    const productRef = adminDb.doc(COLLECTIONS.PRODUCTS, productId)
+    const productRef = adminDb.collection(COLLECTIONS.PRODUCTS).doc(productId)
 
     // Don't update protected fields
     const { id, created_at, ...allowedUpdates } = updateData as any
@@ -344,10 +347,10 @@ export const productUpdate = async (productId: string, updateData: Partial<Produ
 
 export const productIncrementSales = async (productId: string, amount: number = 1): Promise<{ status: boolean; message?: string }> => {
   try {
-    const productRef = adminDb.doc(COLLECTIONS.PRODUCTS, productId)
+    const productRef = adminDb.collection(COLLECTIONS.PRODUCTS).doc(productId)
 
     await productRef.update({
-      sales: require('firebase-admin/firestore').increment(amount),
+      sales: increment(amount),
       updated_at: new Date()
     })
 
@@ -359,18 +362,18 @@ export const productIncrementSales = async (productId: string, amount: number = 
 
 export const productDelete = async (productId: string): Promise<{ status: boolean; message?: string }> => {
   try {
-    await adminDb.doc(COLLECTIONS.PRODUCTS, productId).delete()
+    await adminDb.collection(COLLECTIONS.PRODUCTS).doc(productId).delete()
     return { status: true, message: 'Produk berhasil dihapus' }
   } catch (error: any) {
     return { status: false, message: error.message }
   }
 }
 
-// INVOICE FUNCTIONS
+// INVOICE FUNCTIONS (Server-side only)
 export const getInvoice = async (invoiceId: string): Promise<{ status: boolean; data?: Invoice; message?: string }> => {
   try {
-    const invoiceRef = doc(adminDb, COLLECTIONS.INVOICES, invoiceId)
-    const invoiceSnap = await getDoc(invoiceRef)
+    const invoiceRef = adminDb.collection(COLLECTIONS.INVOICES).doc(invoiceId)
+    const invoiceSnap = await invoiceRef.get()
 
     if (!invoiceSnap.exists()) {
       return { status: false, message: 'Invoice tidak ditemukan' }
@@ -453,7 +456,7 @@ export const invoiceAdd = async (invoiceData: Omit<Invoice, 'id' | 'created_at'>
 
 export const invoiceUpdate = async (invoiceId: string, updateData: Partial<Invoice>): Promise<{ status: boolean; message?: string }> => {
   try {
-    const invoiceRef = adminDb.doc(COLLECTIONS.INVOICES, invoiceId)
+    const invoiceRef = adminDb.collection(COLLECTIONS.INVOICES).doc(invoiceId)
 
     // Don't update protected fields
     const { id, created_at, items, amount, ...allowedUpdates } = updateData as any
@@ -480,7 +483,7 @@ export const invoiceDelete = async (invoiceId: string): Promise<{ status: boolea
       return { status: false, message: 'Tidak dapat menghapus invoice yang sudah lunas' }
     }
 
-    await adminDb.doc(COLLECTIONS.INVOICES, invoiceId).delete()
+    await adminDb.collection(COLLECTIONS.INVOICES).doc(invoiceId).delete()
     return { status: true, message: 'Invoice berhasil dihapus' }
   } catch (error: any) {
     return { status: false, message: error.message }
@@ -506,60 +509,7 @@ export const cleanupPendingInvoices = async (): Promise<{ status: boolean; messa
 
     return {
       status: true,
-      message: `${querySnapshot.size} invoice(s) kadaluarsa berhasil dihapus.`
-    }
-  } catch (error: any) {
-    return { status: false, message: error.message }
-  }
-}
-
-
-// Helper function for pagination
-export const getPaginatedProducts = async (
-  lastVisible: any = null,
-  pageSize: number = 12
-): Promise<{ status: boolean; data?: Product[]; lastVisible?: any; message?: string }> => {
-  try {
-    // Get shown products WITHOUT orderBy to avoid composite index
-    let q = adminDb.collection(COLLECTIONS.PRODUCTS)
-      .where('show', '==', true)
-      .limit(pageSize + (lastVisible ? pageSize : 0)) // Get more when paginating
-
-    if (lastVisible) {
-      q = q.startAfter(lastVisible)
-    }
-
-    const querySnapshot = await q.get()
-    const products = querySnapshot.docs.map(doc => {
-      const productData = doc.data() as any
-      return {
-        id: doc.id,
-        ...productData,
-        created_at: toDate(productData.created_at),
-        updated_at: toDate(productData.updated_at)
-      } as Product
-    })
-
-    // Sort by created_at in-memory (newest first)
-    products.sort((a, b) => {
-      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0
-      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
-      return dateB - dateA
-    })
-
-    // Return requested page size
-    const paginatedProducts = lastVisible
-      ? products.slice(pageSize) // Skip already seen items
-      : products.slice(0, pageSize)
-
-    const newLastVisible = paginatedProducts.length > 0
-      ? paginatedProducts[paginatedProducts.length - 1]
-      : null
-
-    return {
-      status: true,
-      data: paginatedProducts,
-      lastVisible: newLastVisible
+      message: `${querySnapshot.size} invoice kadaluarsa dibersihkan`
     }
   } catch (error: any) {
     return { status: false, message: error.message }

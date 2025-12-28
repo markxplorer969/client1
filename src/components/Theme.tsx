@@ -7,15 +7,22 @@ import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 
 export function ThemeSwitcher({ className }: { className?: string }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Check localStorage for saved theme
+    setMounted(true)
+    // Check localStorage for saved theme, otherwise use system preference
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
     if (savedTheme) {
       setTheme(savedTheme)
-      document.documentElement.classList.toggle('light', savedTheme === 'light')
       document.documentElement.classList.toggle('dark', savedTheme === 'dark')
+    } else {
+      // Check system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const defaultTheme = prefersDark ? 'dark' : 'light'
+      setTheme(defaultTheme)
+      document.documentElement.classList.toggle('dark', prefersDark)
     }
   }, [])
 
@@ -24,31 +31,46 @@ export function ThemeSwitcher({ className }: { className?: string }) {
     setTheme(newTheme)
 
     // Update DOM
-    document.documentElement.classList.toggle('light', newTheme === 'light')
     document.documentElement.classList.toggle('dark', newTheme === 'dark')
 
     // Save to localStorage
     localStorage.setItem('theme', newTheme)
   }
 
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className={cn('flex items-center gap-3', className)}>
+        <Sun className="w-4 h-4 opacity-50" />
+        <Switch
+          id="themeSwitch"
+          checked={theme === 'dark'}
+          onCheckedChange={toggleTheme}
+          aria-label="Toggle theme"
+        />
+        <Moon className="w-4 h-4 opacity-50" />
+      </div>
+    )
+  }
+
   return (
     <div className={cn('flex items-center gap-3', className)}>
-      <Sun className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+      <Sun className="w-4 h-4" />
       <Switch
         id="themeSwitch"
         checked={theme === 'dark'}
         onCheckedChange={toggleTheme}
         aria-label="Toggle theme"
       />
-      <Moon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+      <Moon className="w-4 h-4" />
     </div>
   )
 }
 
 export default function Theme() {
   return (
-    <div className="flex items-center gap-4 p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+    <div className="flex items-center gap-4 p-3 bg-card rounded-lg border border-border">
+      <span className="text-sm font-medium">
         Tema
       </span>
       <ThemeSwitcher />

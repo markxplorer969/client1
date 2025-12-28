@@ -174,8 +174,8 @@ export default function ProductList({ products: initialProducts, loadFromAPI = f
             <div ref={loaderRef} className="text-center py-8">
               {isShowingMore ? (
                 <div className="inline-flex items-center gap-2">
-                  <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-slate-600">Memuat lebih banyak produk...</span>
+                  <div className="w-6 h-6 border-2  border-t-transparent rounded-full animate-spin"></div>
+                  <span className="">Memuat lebih banyak produk...</span>
                 </div>
               ) : (
                 <div className="h-8"></div>
@@ -184,8 +184,8 @@ export default function ProductList({ products: initialProducts, loadFromAPI = f
           )}
 
           {/* Product Count */}
-          <div className="text-center text-slate-600">
-            Menampilkan <span className="font-semibold text-blue-600">{displayedProducts.length}</span> dari <span className="font-semibold">{totalCount}</span> produk
+          <div className="text-center ">
+            Menampilkan <span className="font-semibold ">{displayedProducts.length}</span> dari <span className="font-semibold">{totalCount}</span> produk
           </div>
         </>
       )}
@@ -193,13 +193,13 @@ export default function ProductList({ products: initialProducts, loadFromAPI = f
       {/* Empty State */}
       {!isLoading && !error && displayedProducts.length === 0 && (
         <Card className="text-center p-16">
-          <div className="w-24 h-24 mx-auto mb-6 bg-slate-100 rounded-full flex items-center justify-center">
-            <svg className="w-12 h-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-24 h-24 mx-auto mb-6  rounded-full flex items-center justify-center">
+            <svg className="w-12 h-12 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 002 2H6a2 2 0 002-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414-2.414a1 1 0 01-.293-.707V5a2 2 0 012-2h2.586a1 1 0 001.414.586l2.414 2.414a1 1 0 01.293.707L20 12.586V10" />
             </svg>
           </div>
-          <h3 className="text-2xl font-bold text-slate-800 mb-2">Tidak Ada Produk</h3>
-          <p className="text-slate-600 mb-6 max-w-md mx-auto">
+          <h3 className="text-2xl font-bold  mb-2">Tidak Ada Produk</h3>
+          <p className=" mb-6 max-w-md mx-auto">
             {loadFromAPI
               ? 'Saat ini tidak ada produk yang tersedia.'
               : 'Tidak ada produk yang dapat ditampilkan.'}

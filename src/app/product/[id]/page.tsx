@@ -74,10 +74,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br ">
+        <nav className="fixed top-0 left-0 right-0 z-50 /95 backdrop-blur-md border-b border-border/10">
           <div className="container mx-auto px-4 py-4">
-            <Link href="/" className="text-2xl font-bold text-white hover:text-blue-400 transition-colors">
+            <Link href="/" className="text-2xl font-bold foreground hover: transition-colors">
               Yilzi Digitalz
             </Link>
           </div>
@@ -105,10 +105,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br ">
+        <nav className="fixed top-0 left-0 right-0 z-50 /95 backdrop-blur-md border-b border-border/10">
           <div className="container mx-auto px-4 py-4">
-            <Link href="/" className="text-2xl font-bold text-white hover:text-blue-400 transition-colors">
+            <Link href="/" className="text-2xl font-bold foreground hover: transition-colors">
               Yilzi Digitalz
             </Link>
           </div>
@@ -117,14 +117,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           <div className="container mx-auto px-4">
             <Card className="max-w-md mx-auto">
               <CardContent className="p-8 text-center space-y-4">
-                <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center">
-                  <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-16 h-16 mx-auto  rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3L13.732 20c.77 1.333 2.694 1.333 3.464 0l6.462-11c.77-1.333-.192-3-1.732-3z" />
                   </svg>
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-slate-800">Produk Tidak Ditemukan</h3>
-                  <p className="text-slate-600">{error}</p>
+                  <h3 className="text-xl font-bold ">Produk Tidak Ditemukan</h3>
+                  <p className="">{error}</p>
                 </div>
                 <div className="flex gap-3 justify-center">
                   <Button onClick={loadProduct}>
@@ -151,19 +151,19 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br ">
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
+      <nav className="fixed top-0 left-0 right-0 z-50 /95 backdrop-blur-md border-b border-border/10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-white hover:text-blue-400 transition-colors">
+            <Link href="/" className="text-2xl font-bold foreground hover: transition-colors">
               Yilzi Digitalz
             </Link>
             <div className="flex items-center gap-4">
-              <Link href="/products" className="text-slate-300 hover:text-white transition-colors">
+              <Link href="/products" className=" hover:foreground transition-colors">
                 Produk
               </Link>
-              <Link href="/login" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-all">
+              <Link href="/login" className="bg-gradient-to-r  foreground px-6 py-2 rounded-lg font-semibold transition-all">
                 Login
               </Link>
             </div>
@@ -176,7 +176,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         <section className="container mx-auto px-4 py-12">
           {/* Breadcrumb */}
           <div className="mb-8">
-            <Link href="/products" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold">
+            <Link href="/products" className="inline-flex items-center  hover: font-semibold">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Kembali ke Produk
             </Link>
@@ -186,7 +186,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             {/* Product Image & Basic Info */}
             <div className="lg:col-span-2 space-y-6">
               {/* Product Image */}
-              <div className="relative aspect-square bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative aspect-square bg-gradient-to-br  rounded-2xl overflow-hidden shadow-2xl">
                 {product.imageUrl || product.image || (product.images && product.images[0]) ? (
                   <img
                     src={product.imageUrl || product.image || product.images![0]!}
@@ -194,7 +194,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full text-slate-600">
+                  <div className="flex items-center justify-center h-full ">
                     <svg className="w-32 h-32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
@@ -203,8 +203,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
                 {/* Stock Badge */}
                 {!stockAvailable && (
-                  <div className="absolute inset-0 bg-slate-900/90 flex items-center justify-center backdrop-blur-sm">
-                    <Badge className="bg-red-600 text-white text-xl px-6 py-3 mb-2">
+                  <div className="absolute inset-0 /90 flex items-center justify-center backdrop-blur-sm">
+                    <Badge className=" foreground text-xl px-6 py-3 mb-2">
                       Stok Habis
                     </Badge>
                   </div>
@@ -212,14 +212,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
                 {/* Discount Badge */}
                 {discountPercent && discountPercent > 0 && (
-                  <Badge className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-lg px-4 py-2 shadow-lg">
+                  <Badge className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 foreground text-lg px-4 py-2 shadow-lg">
                     -{discountPercent}%
                   </Badge>
                 )}
 
                 {/* Label Badge */}
                 {product.label && (
-                  <Badge className="absolute top-4 left-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 shadow-lg">
+                  <Badge className="absolute top-4 left-4 bg-gradient-to-r  foreground px-4 py-2 shadow-lg">
                     {product.label}
                   </Badge>
                 )}
@@ -229,13 +229,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <div className="space-y-6">
                 {/* Category */}
                 {product.category && (
-                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                  <Badge className="  hover:">
                     {product.category}
                   </Badge>
                 )}
 
                 {/* Title */}
-                <h1 className="text-4xl font-bold text-slate-800">
+                <h1 className="text-4xl font-bold ">
                   {product.name}
                 </h1>
 
@@ -248,26 +248,26 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                           key={i}
                           className={`w-5 h-5 ${
                             i < Math.round(product.rating!)
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'text-slate-300'
+                              ? 'fill-yellow-400 '
+                              : ''
                           }`}
                         />
                       ))}
                     </div>
-                    <span className="text-lg font-semibold text-slate-700">({product.rating})</span>
+                    <span className="text-lg font-semibold ">({product.rating})</span>
                     {product.review_count && (
-                      <span className="text-slate-600">{product.review_count} ulasan</span>
+                      <span className="">{product.review_count} ulasan</span>
                     )}
                   </div>
                 )}
 
                 {/* Price */}
                 <div className="flex items-center gap-4">
-                  <span className="text-4xl font-extrabold text-blue-600">
+                  <span className="text-4xl font-extrabold ">
                     Rp {formatCurrency(product.price)}
                   </span>
                   {product.original_price && (
-                    <span className="text-xl text-slate-500 line-through">
+                    <span className="text-xl  line-through">
                       Rp {formatCurrency(product.original_price)}
                     </span>
                   )}
@@ -277,8 +277,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
                 {/* Description */}
                 <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-slate-800">Deskripsi</h3>
-                  <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
+                  <h3 className="text-xl font-bold ">Deskripsi</h3>
+                  <p className=" leading-relaxed whitespace-pre-wrap">
                     {product.description || 'Tidak ada deskripsi produk'}
                   </p>
                 </div>
@@ -288,10 +288,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   {product.sold_count && (
                     <Card>
                       <CardContent className="p-4 flex items-center gap-3">
-                        <ShoppingCart className="w-6 h-6 text-blue-600" />
+                        <ShoppingCart className="w-6 h-6 " />
                         <div>
-                          <div className="text-2xl font-bold text-slate-800">{product.sold_count}</div>
-                          <div className="text-sm text-slate-600">Terjual</div>
+                          <div className="text-2xl font-bold ">{product.sold_count}</div>
+                          <div className="text-sm ">Terjual</div>
                         </div>
                       </CardContent>
                     </Card>
@@ -299,10 +299,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   {product.stock && (
                     <Card>
                       <CardContent className="p-4 flex items-center gap-3">
-                        <Box className="w-6 h-6 text-blue-600" />
+                        <Box className="w-6 h-6 " />
                         <div>
-                          <div className="text-2xl font-bold text-slate-800">{product.stock}</div>
-                          <div className="text-sm text-slate-600">Tersedia</div>
+                          <div className="text-2xl font-bold ">{product.stock}</div>
+                          <div className="text-sm ">Tersedia</div>
                         </div>
                       </CardContent>
                     </Card>
@@ -318,9 +318,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     <CardContent>
                       <div className="space-y-2">
                         {product.additional_information.map((info, index) => (
-                          <div key={index} className="flex justify-between p-2 bg-slate-50 rounded">
-                            <span className="font-medium text-slate-700">{info.key}</span>
-                            <span className="text-slate-800">{info.value}</span>
+                          <div key={index} className="flex justify-between p-2  rounded">
+                            <span className="font-medium ">{info.key}</span>
+                            <span className="">{info.value}</span>
                           </div>
                         ))}
                       </div>
@@ -342,7 +342,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               href={`https://wa.me/6281359123789?text=Halo, saya ingin bertanya tentang produk: ${product.name}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+              className="inline-flex items-center gap-2  hover: foreground px-6 py-3 rounded-lg font-semibold transition-colors"
             >
               <MessageCircle className="w-5 h-5" />
               Tanya via WhatsApp

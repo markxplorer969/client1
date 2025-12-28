@@ -23,4 +23,4 @@ export const firebaseAdminConfig = {
   universe_domain: "googleapis.com"
 }
 
-export const adminEmail = 'admin@sadiwa-store-web.com' // Default admin email
+export const adminEmail = 'markxplorer969@gmail.com' // Default admin email
