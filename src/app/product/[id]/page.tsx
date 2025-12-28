@@ -74,7 +74,24 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
     : null
 
-  const stockAvailable = product?.stock_available !== false && ((product?.stock_available ?? 0) > 0 || (product?.stock ?? 0) > 0)
+  // Logic pengecekan ketersediaan stok yang type-safe
+  // 1. Cek tipe data stock (legacy field)
+  const isStockNumber = typeof product?.stock === 'number';
+  const legacyStockCount = isStockNumber ? product.stock! : 0;
+
+  // 2. Cek tipe data stock_available (field utama)
+  const isStockAvailableNumber = typeof product?.stock_available === 'number';
+  const mainStockCount = isStockAvailableNumber ? product.stock_available! : 0;
+
+  // 3. Cek tipe data stock_available sebagai boolean
+  const isStockAvailableBoolean = typeof product?.stock_available === 'boolean';
+  const isAvailableByBoolean = isStockAvailableBoolean ? product.stock_available! : false;
+
+  // 4. Logic gabungan: produk tersedia jika:
+  //    - stock_available === true (boolean), ATAU
+  //    - stock (legacy angka) > 0, ATAU
+  //    - stock_available (angka) > 0
+  const stockAvailable = isAvailableByBoolean || legacyStockCount > 0 || mainStockCount > 0;
 
   if (isLoading) {
     return (
