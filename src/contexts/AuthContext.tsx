@@ -180,7 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       toast.success('Logout Berhasil', {
         description: 'Anda telah logout.'
       })
-    } catch (error) {
+   } catch (error) {
       console.error('Error signing out:', error);
       
       toast.error('Gagal Logout', {
@@ -190,6 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       throw error;
     }
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, isAdmin, token, signInWithGoogle, logout, refreshToken }}>
