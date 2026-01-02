@@ -1,21 +1,47 @@
-import 'server-only';
+import 'server-only'
 
-import { getApps, initializeApp, cert } from 'firebase-admin/app'
-import { getFirestore, increment } from 'firebase-admin/firestore'
-import { getAuth } from 'firebase-admin/auth'
-import { getStorage } from 'firebase-admin/storage'
+import { getApps, initializeApp, cert, App } from 'firebase-admin/app'
+import { getFirestore, FieldValue, Firestore } from 'firebase-admin/firestore'
+import { getAuth, Auth } from 'firebase-admin/auth'
+import { getStorage, Storage } from 'firebase-admin/storage'
+import type { ServiceAccount } from 'firebase-admin'
 import { firebaseAdminConfig } from './config'
 
-// Initialize Firebase Admin
-const app = getApps().length === 0
-  ? initializeApp({
-      credential: cert(firebaseAdminConfig),
-      projectId: firebaseAdminConfig.project_id
-    })
-  : getApps()[0]
+let app: App
 
-const db = getFirestore(app)
-const adminAuth = getAuth(app)
-const storage = getStorage(app)
+/**
+ * FIX UTAMA:
+ * cert() BUTUH ServiceAccount,
+ * sedangkan env/config biasanya string-based
+ */
+const serviceAccount: ServiceAccount = {
+  projectId: firebaseAdminConfig.project_id,
+  clientEmail: firebaseAdminConfig.client_email,
+  privateKey: firebaseAdminConfig.private_key?.replace(/\\n/g, '\n')
+}
 
-export { app, db, adminAuth, storage, increment }
+if (!getApps().length) {
+  app = initializeApp({
+    credential: cert(serviceAccount),
+    projectId: firebaseAdminConfig.project_id
+  })
+} else {
+  app = getApps()[0]
+}
+
+const db: Firestore = getFirestore(app)
+const adminAuth: Auth = getAuth(app)
+const storage: Storage = getStorage(app)
+
+/**
+ * Helper increment (Firestore)
+ */
+const increment = FieldValue.increment
+
+export {
+  app,
+  db,
+  adminAuth,
+  storage,
+  increment
+}
