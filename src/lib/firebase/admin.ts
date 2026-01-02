@@ -6,12 +6,14 @@ import { getAuth } from 'firebase-admin/auth';
 import { getStorage } from 'firebase-admin/storage';
 import { firebaseAdminConfig } from './config';
 
-// Logic inisialisasi App yang lebih robust
+// Variable global untuk app instance
 let app;
 
+// Cek apakah app sudah ada untuk mencegah double initialization
 if (!getApps().length) {
   app = initializeApp({
-    credential: cert(firebaseAdminConfig),
+    // FIX: Tambahkan 'as any' di sini agar TypeScript tidak protes soal format snake_case vs camelCase
+    credential: cert(firebaseAdminConfig as any),
     storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   });
 } else {
@@ -20,8 +22,8 @@ if (!getApps().length) {
 
 // Inisialisasi service
 const db = getFirestore(app);
-const adminAuth = getAuth(app); // Menggunakan nama 'adminAuth' agar match dengan import file lain
+const adminAuth = getAuth(app);
 const storage = getStorage(app);
 
-// Export lengkap sesuai kebutuhan file lain
+// Export semua instance
 export { app, db, adminAuth, storage, FieldValue };
