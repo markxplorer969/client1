@@ -58,12 +58,12 @@ export async function middleware(request: NextRequest) {
 
   // Check if it's an API route
   const isApiRoute = pathname.startsWith('/api')
-
-  // Rate limiting for API routes
-  if (isApiRoute) {
-    // Get client identifier (IP address or session token)
-    const identifier = request.ip || request.headers.get('x-forwarded-for') || 'anonymous'
-
+  
+    if (isApiRoute) {
+      // Get client identifier (IP address or session token)
+      // FIX: Gunakan (request as any).ip untuk mengatasi error TypeScript
+      const identifier = (request as any).ip || request.headers.get('x-forwarded-for') || 'anonymous';
+      
     // Find matching rate limit rule
     let rateLimit = RATE_LIMIT['/api']
     for (const [prefix, limit] of Object.entries(RATE_LIMIT)) {
