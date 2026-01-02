@@ -1,21 +1,26 @@
 import 'server-only';
 
-import { getApps, initializeApp, cert } from 'firebase-admin/app'
-import { getFirestore, increment } from 'firebase-admin/firestore'
-import { getAuth } from 'firebase-admin/auth'
-import { getStorage } from 'firebase-admin/storage'
-import { firebaseAdminConfig } from './config'
+import { getApps, initializeApp, cert } from 'firebase-admin/app';
+// FIX: Ganti 'increment' dengan 'FieldValue'
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
+import { getStorage } from 'firebase-admin/storage';
+import { firebaseAdminConfig } from './config';
 
-// Initialize Firebase Admin
-const app = getApps().length === 0
-  ? initializeApp({
-      credential: cert(firebaseAdminConfig),
-      projectId: firebaseAdminConfig.project_id
-    })
-  : getApps()[0]
+// Mencegah inisialisasi ganda di hot-reload Next.js
+if (!getApps().length) {
+  initializeApp({
+    credential: cert(firebaseAdminConfig),
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  });
+}
 
-const db = getFirestore(app)
-const adminAuth = getAuth(app)
-const storage = getStorage(app)
+const db = getFirestore();
+const auth = getAuth();
+const storage = getStorage();
 
-export { app, db, adminAuth, storage, increment }
+// Export instance utama
+export { db, auth, storage };
+
+// Export FieldValue agar bisa dipakai di file lain (misal: FieldValue.increment(1))
+export { FieldValue };
