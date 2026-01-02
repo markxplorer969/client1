@@ -1,7 +1,6 @@
-import { NextRequest } from 'next/server' // NextResponse tidak terpakai, bisa dihapus atau dibiarkan
+import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from 'firebase-admin/auth'
-// FIX: Hapus doc, getDoc, setDoc. Cukup getFirestore.
-import { getFirestore } from 'firebase-admin/firestore'
+import { getFirestore, doc, getDoc, setDoc } from 'firebase-admin/firestore'
 import { app } from '@/lib/firebase/admin'
 import { adminEmail } from '@/lib/firebase/config'
 
@@ -21,14 +20,11 @@ export const getCurrentUser = async (req: NextRequest) => {
     const auth = getAuth(app)
     const decodedToken = await auth.verifyIdToken(token)
 
-    // Get user data from Firestore (Admin SDK Style)
+    // Get user data from Firestore
     const db = getFirestore(app)
-    
-    // FIX: Gunakan syntax Admin SDK (chaining)
-    const userDocRef = db.collection('users').doc(decodedToken.uid)
-    const userDoc = await userDocRef.get()
+    const userDoc = await getDoc(doc(db, 'users', decodedToken.uid))
 
-    if (!userDoc.exists) {
+    if (!userDoc.exists()) {
       // Create user document if it doesn't exist
       const userData = {
         email: decodedToken.email,
@@ -39,9 +35,7 @@ export const getCurrentUser = async (req: NextRequest) => {
         updatedAt: new Date().toISOString(),
         role: 'user' // Default role
       }
-      
-      // FIX: Gunakan syntax Admin SDK .set()
-      await userDocRef.set(userData)
+      await setDoc(doc(db, 'users', decodedToken.uid), userData)
       return { uid: decodedToken.uid, ...userData }
     }
 
