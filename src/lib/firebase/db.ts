@@ -1,10 +1,10 @@
 import 'server-only';
 import { Timestamp, FieldValue } from 'firebase-admin/firestore';
-import { db as adminDb } from '@/lib/firebase/admin';
+import { db as adminDb } from './lib/firebase/admin';
 
 // Definisi Type Manual (karena kita tidak import dari types file untuk menghindari circular dependency jika ada)
 // Anda bisa tetap import dari './types' jika file types tersebut bersih dari code client side.
-import type { User, Product, Invoice } from '@/types'; 
+import type { User, Product, Invoice } from './types'; 
 
 // Collection names
 const COLLECTIONS = {
